@@ -3,7 +3,7 @@
 * **Description:**
 	Nothing is able to stop the invincible Chuck Norris
 
-* **Cvars:**
+* **Cvars:** </br>
 	zp_chuck_norris_minplayers "2" ; Minimun of players for start a Chuck Norris Mod
 
 * **Change log:**
