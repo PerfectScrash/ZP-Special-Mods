@@ -1,0 +1,35 @@
+[bp]
+PAIN_TAG = !g[ZPSp Pain]!y
+PAIN_INFO = Pressione !t[E]!y para usar a habilidade selecionada g||!y Pressione !t[R]!y para escolher a habilidade
+CHIBAKU_WAIT = Aguarde alguns segundos para usar o !tChibaku Tensei!y novamente
+SHINRA_WAIT = Aguarde alguns segundos para usar o !tShinra Tensei!y novamente
+BANSHO_WAIT = Aguarde alguns segundos para usar o !tBansho Ten'in!y novamente
+SHINRA_READY = A habilidade !tShinra Tensei!y esta pronta
+CHIBAKU_READY = A habilidade !tChibaku Tensei!y esta pronta
+BANSHO_READY = A habilidade !tBansho Ten'in!y esta pronta
+SUPER_SHINRA_READY = A habilidade !tSuper Shinra Tensei!y esta pronta para uso :)
+BANSHO_AIM_TO = Mire em um zumbi !
+WORLD_KNOW_THE_PAIN = O MUNDO TEM QUE CONHECER A DOR !!!!
+ARE_PAIN = %s eh o %s
+SHINRA_TENSEI = [Shinra Tensei]
+CHIBAKU_TENSEI = [Chibaku Tensei]
+BANSHO_TENIN = [Bansho Ten'in]
+SUPER_SHINRA_TENSEI = [Super Shinra Tensei]
+
+[en]
+PAIN_TAG = !g[ZPSp Pain]!y
+PAIN_INFO = Press !t[E]!y button to use a choosed skill g||!y Press !t[R]!y button for choose the skill
+CHIBAKU_WAIT = Wait Some Seconds For use the !tChibaku Tensei!y Again.
+SHINRA_WAIT = Wait Some Seconds For use the !tShinra Tensei!y Again.
+BANSHO_WAIT = Wait Some Seconds For use the !tBansho Ten'in!y Again.
+SHINRA_READY = The Hability !tShinra Tensei!y is Ready.
+CHIBAKU_READY = The Hability !tChibaku Tensei!y is Ready.
+BANSHO_READY = The Hability !tBansho Ten'in!y is Ready.
+SUPER_SHINRA_READY = The Hability !tSuper Shinra Tensei!y is ready to use.
+BANSHO_AIM_TO = Aim to zombie !!
+WORLD_KNOW_THE_PAIN = THE WORLD HAS TO KNOW THE PAIN !!!!
+ARE_PAIN = %s is a %s
+SHINRA_TENSEI = [Shinra Tensei]
+CHIBAKU_TENSEI = [Chibaku Tensei]
+BANSHO_TENIN = [Bansho Ten'in]
+SUPER_SHINRA_TENSEI = [Super Shinra Tensei]
