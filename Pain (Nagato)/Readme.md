@@ -1,5 +1,8 @@
 ## [ZPSp] Special Class: Pain/Nagato Mode
 
+### Video Demostration: https://www.youtube.com/watch?v=AjFqjKtCOhY
+### Download Resources: https://github.com/PerfectScrash/ZP-Special-Mods/raw/master/Pain%20(Nagato)/Resources.zip
+
 **Requeriments:**<br/>
 - Amxmodx 1.8.2 or higher<br/>
 - Zombie Plague Special 4.3 or higher
@@ -29,8 +32,6 @@ It will float and whirling around in a circle like in a hurricane.<br/>
 - zp_pain_bansho_reelspeed "2000"		// Bansho Push Speed<br/>
 - zp_pain_bansho_damage "1000"		// Bansho Damage<br/>
 - zp_pain_bansho_countdown "5.0"		// Time it had taken for Using Bansho Ten'in Again
-
-### Download Resources: https://github.com/PerfectScrash/ZP-Special-Mods/raw/master/Pain%20(Nagato)/Resources.zip
 
 ## Credits:
 - [P]erfec[T] [S]cr[@]s[H]: For make this Gamemod/Special Class
