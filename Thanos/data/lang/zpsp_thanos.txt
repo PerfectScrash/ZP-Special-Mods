@@ -1,0 +1,53 @@
+[bp]
+THANOS_TAG = !g[ZPSp Thanos]!y
+THANOS_AUTO_UNSTUCK = Destravamento Automatico....
+YOU_ARE_THANOS = Voce eh Inevitavel (Thanos) !!!!
+THANOS_INFO = Pressione !t[E]!y para usar a joia selecionada !g||!y Pressione !t[R]!y para escolher a joia
+INFINITY_GEM_WAIT = Aguarde alguns segundos para usar alguma !tJoia do Infinito!y novamente
+ALLOW_USE_GEM = Voce ja pode usar a sua !tJoia do Infinito!y novamente.
+HUD_TURNED_THANOS = %s EH INEVITAVEL !!!!
+
+REALITY_VICTIM = Suas Armas Viraram Bolhas com a !tJoia da Realidade!y de Thanos
+SOUL_GEM_SKILL = O !t%s!y esta jogando todos para dentro da !tJoia da Alma
+ABSORBEB_BY_SOUL_GEM = Voce foi absorvido pela !tJoia da Alma
+STOPPED_TIME = !t%s!y Parou o Tempo com a !tJoia do Tempo
+TIME_ALTERADY_STOPPED = O Tempo ja esta parado.
+TIME_RETURN_WORKS = O Tempo voltou a andar.
+ALLOW_SNAP_FINGERS = Voce pode fazer o !tEstalar de Dedos!y. Basta selecionar apertando !t[R]
+SNAP_FINGERS = O !t%s!y Estalou os Dedos FUUUUUUUUUUUUUDEUUUUUUUU!!!!!!!!
+SNAP_CHOOSED = Voce foi escolhido aleatoriamente para ser morto no !tEstalo de dedos do Thanos
+
+POWER_GEM = [Joia do Poder]
+SPACE_GEM = [Joia do Espaco]
+REALITY_GEM = [Joia da Realidade]
+SOUL_GEM = [Joia da Alma]
+MIND_GEM = [Joia da Mente]
+TIME_GEM = [Joia do Tempo]
+ALL_GEMS = [Estalar os dedos]
+
+[en]
+THANOS_TAG = !g[ZPSp Thanos]!y
+THANOS_AUTO_UNSTUCK = Auto-Unstuck....
+YOU_ARE_THANOS = You are Invevitable (Thanos) !!!!
+THANOS_INFO = Press !t[E]!y button for use an selected !tInfinity Stone !g||!y Press !t[R]!y button for choose an !tInfinity Stone
+INFINITY_GEM_WAIT = Wait some seconds for use an !tInfinity Stone!y again
+ALLOW_USE_GEM = You can use an your !tInfinity Stone!y Again.
+HUD_TURNED_THANOS = %s IS INEVITABLE !!!!
+
+REALITY_VICTIM = Your guns are transformed in burbles because of a !tThanos's Reality Stone!y
+SOUL_GEM_SKILL = !t%s!y is throwing everyone into the !tSoul Stone
+ABSORBEB_BY_SOUL_GEM = You are absorbeb by !tSoul Stone
+STOPPED_TIME = !t%s!y stopped the time with a !tTime Stone
+TIME_ALTERADY_STOPPED = Time is already stopped.
+TIME_RETURN_WORKS = Time has returned to works !
+ALLOW_SNAP_FINGERS = You can make the !tSnap Fingers!y. Simply select by pressing !t[R]!y Button
+SNAP_FINGERS = OH NOOOOO !!!!!!! the !t%s!y has snapped his fingers !!!!!!!!
+SNAP_CHOOSED = You were randomly chosen to be killed in the !tThanos Finger Snap
+
+POWER_GEM = [Power Stone]
+SPACE_GEM = [Space Stone]
+REALITY_GEM = [Reality Stone]
+SOUL_GEM = [Soul Stone]
+MIND_GEM = [Mind Stone]
+TIME_GEM = [Time Stone]
+ALL_GEMS = [Snap the Fingers]
