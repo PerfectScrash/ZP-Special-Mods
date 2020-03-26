@@ -1,0 +1,43 @@
+[en]
+NOTICE_CHUCK_NORRIS = %s is an Chuck Noris !!!
+CHUCK_MSG1 = No point in running away from ^nChuck Norris^nHe thinks you're up in the belly of his mother
+CHUCK_MSG2 = One day Chuck Norris^nlet out a fart^nThus was created the Sun
+CHUCK_MSG3 = Once Chuck Norris was stabbed in the eye^nThe knife went blind.
+CHUCK_MSG4 = After watching The Ring, the phone rang and Chuck Norris came a brief dialogue:^nSeven Days.^n- Here is Chuck Norris.^nSorry, it was mistake.
+CHUCK_MSG5 = Chuck Norris counted to infinity^nTwo Times!
+CHUCK_MSG6 = Chuck Norris once ate a whole cake^nbefore his friends could tell^nhim there was a stripper in.
+CHUCK_MSG7 = Chuck Norris does not read books^nhe the face to get all the information you need
+CHUCK_MSG8 = Chuck Norris request a Big Mac at Buger King^nIt was attended!
+CHUCK_MSG9 = When the boogie man goes to sleep, he leaves the light on for fear of Chuck Norris.
+CHUCK_MSG10 = Chuck Norris invented the woman^nbecause sheep knew not bring cold beer.
+CHUCK_MSG11 = A child of God eh necessarily a grandson of Chuck Norris!
+CHUCK_MSG12 = Chuck Norris can kill two stones with one bird :)
+CHUCK_MSG13 = Chuck Norris fez fogo com 2 cubo de gelo !
+CHUCK_MSG14 = Chuck Norris cacou todos os Pokemons com um telefone fixo
+CHUCK_MSG15 = Uma vez Chuck Norris fez uma aposta com Super Homen^nQuem perdesse iria usar a cueca pelo lado de fora
+CHUCK_MSG16 = Chuck Norris parou uma motoserra com a mão
+CHUCK_MSG17 = Uma vez Chuck Norris chegou atrasado na aula...^nA Professora foi demitida por chegar cedo demais
+CHUCK_MSG18 = Chuck Norris nao sente dor^nEh a Dor que sente Chuck Norris
+CHUCK_COUNTDOWN = :: %d ::^nCount for the Zombies hide yourselves is Chuck Norris^nEven if the death is all true.
+
+[bp]
+NOTICE_CHUCK_NORRIS = %s eh o Chuck Norris !!!
+CHUCK_MSG1 = Nao adianta fugir de^nChuck Norris^nEle te acha ate na^nBarriga da sua Mae
+CHUCK_MSG2 = Um dia Chuck Norris^nSoltou um Pum^nAssim foi criado o Sol
+CHUCK_MSG3 = Uma vez Chuck Norris levou uma facada no olho^nA faca ficou cega.
+CHUCK_MSG4 = Depois de assistir O Chamado, o telefone de Chuck Norris tocou^n e aconteceu um breve dialogo:^nSete dias.^n- Aqui eh Chuck Norris.^nDesculpe, foi engano.
+CHUCK_MSG5 = Chuck Norris contou ate o infinito^nDuas vezes !
+CHUCK_MSG6 = Uma vez Chuck Norris comeu um bolo inteiro^nantes que seus amigos pudessem^nlhe contar que havia uma stripper dentro.
+CHUCK_MSG7 = Chuck Norris nao le livros^nele os encara ate conseguir toda a informacao que precisa
+CHUCK_MSG8 = Chuck Norris pediu um Big Mac no Burguer King^n Ele foi atendido !
+CHUCK_MSG9 = Quando o Bicho Papao vai dormir, ele deixa a luz acesa com medo de Chuck Norris.
+CHUCK_MSG10 = Chuck Norris inventou a mulher^nporque ovelhas nao sabiam trazer cerveja gelada
+CHUCK_MSG11 = Um filho de Deus eh necessariamente um neto de Chuck Norris !
+CHUCK_MSG12 = Chuck Norris pode matar duas pedras com um passarinho :)
+CHUCK_MSG13 = Chuck Norris fez fogo com 2 cubo de gelo !
+CHUCK_MSG14 = Chuck Norris cacou todos os Pokemons com um telefone fixo
+CHUCK_MSG15 = Uma vez Chuck Norris fez uma aposta com Super Homen^nQuem perdesse a aposta iria usar a cueca pelo lado de fora
+CHUCK_MSG16 = Chuck Norris parou uma motoserra com a mão !!
+CHUCK_MSG17 = Uma vez Chuck Norris chegou atrasado na aula...^nA Professora foi demitida por chegar cedo demais
+CHUCK_MSG18 = Chuck Norris nao sente dor^nEh a Dor que sente Chuck Norris
+CHUCK_COUNTDOWN = :: %d ::^nContagem para que os Zombies Escondam de Chuck Norris^nMesmo que a Morte de todos seja a realidade
