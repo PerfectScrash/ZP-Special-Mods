@@ -14,3 +14,5 @@
 	* 1.1:
 		- Fixed Ambience Sound
 		- Optimized Code
+
+### Download Resources: https://github.com/PerfectScrash/ZP-Special-Mods/blob/master/Dog/resources.zip?raw=true
