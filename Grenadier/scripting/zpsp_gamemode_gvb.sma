@@ -31,7 +31,7 @@ new const sound_gvb[][] = { "zombie_plague/survivor1.wav" }
 new const ambience_gvb_sound[][] = { "zombie_plague/ambience.wav" } 
 new const ambience_gvb_dur[][] = { "17" }
 
-#if ZPS_INC_VERSION > 44
+#if ZPS_INC_VERSION >= 44
 new const gm_respawn_limit = 3 // Respawn Limit per Player (Zombie Plague Special 4.4 Version or higher requires)
 #endif
 
