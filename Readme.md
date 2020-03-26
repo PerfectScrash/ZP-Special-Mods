@@ -1,3 +1,2 @@
-## ZP Special Class/Gamemodes
-
-*For Best Working i recommend to use Zombie Plague Special 4.4 or higher version*
+# ZP Special Class/Gamemodes
+*Special Classes and Game modes for Zombie Plague Special (4.3 or higher)*
