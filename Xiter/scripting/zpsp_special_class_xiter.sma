@@ -263,7 +263,7 @@ start_xiter_mode() {
 	new id, i, has_xiter
 	has_xiter = false
 	for (i = 1; i <= g_maxplayers; i++) {
-		if(!is_user_connected(i))
+		if(!is_user_alive(i))
 			continue;
 
 		if(zp_get_human_special_class(i) == g_speciald) {
@@ -277,7 +277,7 @@ start_xiter_mode() {
 		zp_make_user_special(id, g_speciald, GET_HUMAN)
 	}
 	
-	static name[32]; get_user_name(id, name, 31);
+	static name[32]; get_user_name(id, name, charsmax(name));
 	set_hudmessage(sp_color_r, sp_color_g, sp_color_b, -1.0, 0.17, 1, 0.0, 5.0, 1.0, 1.0, -1)
 	ShowSyncHudMsg(0, g_msg_sync, "%s is a %s", name, sp_name)
 		
