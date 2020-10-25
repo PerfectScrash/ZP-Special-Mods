@@ -7,19 +7,10 @@
 	 *||CVARS||*
 	-------------
 
-	- zp_sonic_vs_shadow_minplayers 2
-		- Minimum players required for this game mode to be
-		  activated
-
-	- zp_sonic_vs_shadow_sonic_hp 1.5
-		- Sonic HP multiplier
-	
-	- zp_sonic_vs_shadow_shadow_hp 1.0
-		- Shadows HP multiplier
-
-	- zp_sonic_vs_shadow_inf_ratio 0.5
-		- Infection ratio of this game mode i.e how many players
-		  will turn into shadows [Total players * infection ratio]
+	- zp_sonic_vs_shadow_minplayers 2 // Minimum players required for this game mode to be activated
+	- zp_sonic_vs_shadow_sonic_hp 5000 // Sonic Health
+	- zp_sonic_vs_shadow_shadow_hp 5000 // Shadow Health
+	- zp_sonic_vs_shadow_inf_ratio 0.5 // Infection ratio of this game mode i.e how many players will turn into shadow [Total players * infection ratio]
 		  	
 \***************************************************************************/
 
