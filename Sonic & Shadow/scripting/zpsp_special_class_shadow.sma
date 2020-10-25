@@ -1231,5 +1231,4 @@ public move_homming_aim(attacker, victim)
 		set_pev(g_aim_ent[attacker], pev_aiment, victim)
 		//set_pev(g_aim_ent[attacker], pev_owner, victim)
 	}
-
 }
