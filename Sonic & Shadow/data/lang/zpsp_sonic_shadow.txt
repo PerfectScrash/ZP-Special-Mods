@@ -1,0 +1,39 @@
+[en]
+YOURE_SHADOW = You're a !t[Shadow the Hedgehog] !g||!y Third Person View MANDATORY
+SHADOW_INFO = Press !t[E]!y for use a !tBOOST !g||!y Press !t[R]!y for use a !tSpin Dash !g||!y Use double jump for a !tHomming Attack
+YOURE_SONIC = You're a !t[Sonic the Hedgehog] !g||!y Third Person View MANDATORY
+SONIC_INFO = Press !t[E]!y for use a !tBOOST !g||!y Press !t[R]!y for use a !tSpin Dash !g||!y Use double jump for a !tHomming Attack
+BOOST_GAUGE = ---------[BOOST]--------
+START_SHADOW = %s is a Shadow
+START_SONIC = %s is a Sonic
+START_SVS = Shadow vs Sonic Mode !!!
+
+[es]
+YOURE_SHADOW = Tu eres el !t[Shadow el Erizo] !g||!y Vista en tercera persona OBLIGATORIA
+SHADOW_INFO = Pressione !t[E]!y para usar el !tBOOST !g||!y Pressione !t[R]!y para usar el !tSpin Dash !g||!y Salta dos veces para usar el !tHomming Attack
+YOURE_SONIC = Tu eres el !t[Sonic el Erizo] !g||!y Vista en tercera persona OBLIGATORIA
+SONIC_INFO = Pressione !t[E]!y para usar el !tBOOST !g||!y Pressione !t[R]!y para usar el !tSpin Dash !g||!y Salta dos veces para usar el !tHomming Attack
+BOOST_GAUGE = ---------[BOOST]--------
+START_SHADOW = ¡%s eres el Shadow!
+START_SONIC = ¡%s eres el Sonic!
+START_SVS = ¡Shadow vs Sonic!
+
+[bp]
+YOURE_SHADOW = Voce eh o !t[Shadow the Hedgehog] !g||!y Visao de terceira pessoa OBRIGATORIA
+SHADOW_INFO = Pressione !t[E]!y Para usar o !tBOOST !g||!y Pressione !t[R]!y Para usar o !tSpin Dash !g||!y Pule duas vezes para usar o !tHomming Attack
+YOURE_SONIC = Voce eh o !t[Sonic the Hedgehog] !g||!y Visao de terceira pessoa OBRIGATORIA
+SONIC_INFO = Pressione !t[E]!y Para usar o !tBOOST !g||!y Pressione !t[R]!y Para usar o !tSpin Dash !g||!y Pule duas vezes para usar o !tHomming Attack
+BOOST_GAUGE = ---------[BOOST]--------
+START_SHADOW = %s eh o Shadow
+START_SONIC = %s eh o Sonic
+START_SVS = Modo Shadow vs Sonic !!!
+
+[pt]
+YOURE_SHADOW = Voce eh o !t[Sombra o Ourico] !g||!y Visao de terceira pessoa OBRIGATORIA.
+SHADOW_INFO = Pressione !t[E]!y Para usar a !tVELOCIDADE !g||!y Pressione !t[R]!y Para usar o !tGiro de Traco !g||!y Pule duas vezes para usar o !tAtaque teleguiado
+YOURE_SONIC = Voce eh o !t[Sonico o Ourico] !g||!y Visao de terceira pessoa OBRIGATORIA.
+SONIC_INFO = Pressione !t[E]!y Para usar a !tVELOCIDADE !g||!y Pressione !t[R]!y Para usar o !tGiro de Traco !g||!y Pule duas vezes para usar o !tAtaque teleguiado
+BOOST_GAUGE = ------[VELOCIDADE]------
+START_SHADOW = %s e o Sombra
+START_SONIC = %s e o Sonico
+START_SVS = Modo Sombra vs Sonico !!!
