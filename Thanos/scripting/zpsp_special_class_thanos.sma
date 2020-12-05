@@ -91,8 +91,8 @@ new Array:g_sound, g_ambience_sounds, Array:g_sound_amb_dur, Array: g_sound_ambi
 
 // Default Sounds
 new const sound[][] = { "zombie_plague/thanos_i-am-inevitable.wav" }
-new const ambience_sound[][] = { "zombie_plague/ambience.wav" } 
-new const ambience_dur[][] = { "17" }
+new const ambience_sound[][] = { "zombie_plague/avengers_theam_1.mp3" , "zombie_plague/avengers_theam_2.mp3" } 
+new const ambience_dur[][] = { "121" , "203" }
 new const snap_sound[] = "zombie_plague/thanos-snap-fingers.wav"
 new const use_stone[] = "zombie_plague/thanos-use-stone.wav"
 
