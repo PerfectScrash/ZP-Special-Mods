@@ -41,6 +41,22 @@
 		zp_thanos_reality_duration 10	// Reality Stone Skill Duration
 		zp_thanos_mind_duration 10		// Mind Stone Skill Duration
 
+	* Credits:
+		- [P]erfect [S]crash: For make this plugin
+		- NIGHT HOWLER: For "Avengers Theme Sound"
+		- Disney/Marvel: Ambience Sound and Sound Effects from movies
+		- ???: For 3D Player Model (I just converted to cs 1.6 only)
+
+	* Changelog:
+		- 1.0: 
+			- First Release
+		- 1.1:
+			- Fixed Bug in Mind Stone (Before you can kill zombies too with a mind stone)
+			- Improved Effect when you die by snap
+		- 1.2:
+			- Added Ambience Sounds.
+			- Fixed Bug When thanos killed while time stone are active the players are still stucked for the rest of the round time instead of reseting. (Thanks inlovecs for report)
+
 */
 
 #include <amxmodx>
@@ -69,6 +85,9 @@ const FFADE_IN = 0x0000
 const UNIT_SECOND = (1<<12)
 
 new Array:g_sound, g_ambience_sounds, Array:g_sound_amb_dur, Array: g_sound_ambience, cvar_frost_dur
+
+// Enable Ambience?
+#define AMBIENCE_ENABLE 0
 
 // Default Sounds
 new const sound[][] = { "zombie_plague/thanos_i-am-inevitable.wav" }
@@ -126,8 +145,6 @@ new cvar_power_knockback, cvar_power_radius, cvar_power_damage
 new cvar_soul_radius, cvar_soul_speed, cvar_soul_duration
 new cvar_time_duration, cvar_reality_duration, cvar_mind_duration
 
-// Enable Ambience?
-#define AMBIENCE_ENABLE 0
 
 // Tasks
 #define TASK_AMB 3256
@@ -140,8 +157,12 @@ new cvar_time_duration, cvar_reality_duration, cvar_mind_duration
 public plugin_init()
 {
 	// Plugin registeration.
-	register_plugin("[ZPSp] Special Class: Thanos","1.0", "[P]erfec[T] [S]cr[@]s[H]")
+	register_plugin("[ZPSp] Special Class: Thanos", "1.2", "[P]erfec[T] [S]cr[@]s[H]")
 	register_dictionary("zpsp_thanos.txt")
+
+	// Show servers are using this plugin
+	register_cvar("zpsp_class_thanos", "1.2", FCVAR_SERVER|FCVAR_SPONLY)
+	set_cvar_string("zpsp_class_thanos", "1.2")
 	
 	// Gamemode cvars
 	cvar_minplayers = register_cvar("zp_minplayers_thanos", "2")
@@ -377,7 +398,7 @@ public zp_round_started(game, id)
 
 public allow_all_gems() {
 	allow_use_all = true
-	for(new i = 0; i <= g_maxplayers; i++) {
+	for(new i = 1; i <= g_maxplayers; i++) {
 		if(!is_user_alive(i))
 			continue;
 
@@ -454,10 +475,10 @@ public start_ambience_sounds()
 public zp_round_ended() {
 	remove_task(TASK_AMB)
 	remove_task(TASK_ALL_GEMS)
-	is_sttoped = false
+	is_sttoped = 0
 	allow_use_all = false
 
-	for(new i = 0; i <= g_maxplayers; i++) {
+	for(new i = 1; i <= g_maxplayers; i++) {
 		if(!is_user_alive(i))
 			continue
 
@@ -476,6 +497,11 @@ public reset_thanos_vars(i) {
 	g_current_infgem[i] = POWER
 	g_used_skill[i] = false
 	g_using_skill[i] = -1
+	
+	if(is_sttoped == i) {
+		set_screenfadein(0, 1, 0, 0, 0, 0)
+		end_time_gem_skill(i+TASK_END_SKILL)
+	}
 }
 
 public zp_user_infected_post(id) {
@@ -707,7 +733,7 @@ public use_inf_gem(id, gem)
 
 			// Custom explosion effect
 			create_blast(OriginF, get_pcvar_num(cvar_power_radius), 255, 0, 255)
-			for(new i = 0; i <= g_maxplayers; i++) {
+			for(new i = 1; i <= g_maxplayers; i++) {
 				if(!is_user_alive(i) || i == id)
 					continue
 
@@ -843,9 +869,9 @@ public use_inf_gem(id, gem)
 
 			g_using_skill[id] = TIME
 			g_used_skill[id] = true
-			is_sttoped = true
+			is_sttoped = id
 			
-			for(new i = 0; i <= g_maxplayers; i++)
+			for(new i = 1; i <= g_maxplayers; i++)
 			{
 				if(!is_user_alive(i) || i == id)
 					continue;
@@ -924,7 +950,7 @@ public Soul_Gem_Absorb(id) {
 	pev(id, pev_origin, UserOrigin)
 	//set_pev(id, pev_velocity, Float:{0.0,0.0,0.0})
 
-	for(new i = 0; i <= g_maxplayers; i++)
+	for(new i = 1; i <= g_maxplayers; i++)
 	{
 		if(!is_user_alive(i))
 			continue
@@ -992,7 +1018,7 @@ public end_skill(id)
 }
 public end_time_gem_skill(id) {
 	id -= TASK_END_SKILL
-	for(new i = 0; i <= g_maxplayers; i++)
+	for(new i = 1; i <= g_maxplayers; i++)
 	{
 		if(!is_user_alive(i))
 			continue;
@@ -1002,7 +1028,7 @@ public end_time_gem_skill(id) {
 	}
 
 	g_used_skill[id] = true
-	is_sttoped = false
+	is_sttoped = 0
 	g_using_skill[id] = -1
 	remove_task(id+TASK_ENABLE_SKILL)
 	set_task(get_pcvar_float(cvar_skill_countdown), "enable_skill", id+TASK_ENABLE_SKILL)
@@ -1344,7 +1370,7 @@ public kill_half_humans(id) {
 
 	static kill_count, max_kills, i
 	kill_count = 0
-	i = 0
+	i = 1
 	max_kills = 0
 
 	if(zp_get_human_count() > 1) {
@@ -1374,7 +1400,7 @@ public kill_half_humans(id) {
 		}
 	}
 	else  {
-		for(i = 0; i <= g_maxplayers; i++) {
+		for(i = 1; i <= g_maxplayers; i++) {
 			if(!is_user_alive(i))
 				continue;
 
