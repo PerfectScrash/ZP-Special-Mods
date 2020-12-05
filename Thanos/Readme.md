@@ -42,5 +42,17 @@ zp_thanos_time_duration 10		// Time Stone Skill Duration
 zp_thanos_reality_duration 10	        // Reality Stone Skill Duration
 zp_thanos_mind_duration 10		// Mind Stone Skill Duration
 ```
+* **Change Log:**
+```
+- 1.0: 
+  - First Release
+- 1.1:
+  - Fixed Bug in Mind Stone (Before you can kill zombies too with a mind stone)
+  - Improved Effect when you die by snap
+- 1.2:
+  - Added Ambience Sounds.
+  - Fixed Bug When thanos killed while time stone are active the players are still stucked for the rest of the round time instead of reseting. (Thanks inlovecs for report)
 
-### Download Resources: https://github.com/PerfectScrash/ZP-Special-Mods/raw/master/Thanos/Resources.zip
+```
+
+### Download Resources: https://github.com/PerfectScrash/ZP-Special-Mods/raw/master/Thanos/resources.zip
