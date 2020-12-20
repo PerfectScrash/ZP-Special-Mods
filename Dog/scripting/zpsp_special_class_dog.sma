@@ -16,6 +16,8 @@
 				- Fixed Ambience Sound
 				- Optimized Code
 
+			-- 20/12 Fix: Fixed Error log on "event_round_started"
+
 
 */
 
@@ -72,7 +74,7 @@ public plugin_init()
 	RegisterHam(Ham_Killed, "player", "fw_PlayerKilled")
 	register_event("CurWeapon","CurrentWeapon","be","1=1")
 	register_forward(FM_PlayerPreThink, "fw_PlayerPreThink")
-	register_event("HLTV", "event_round_start", "a", "1=0", "2=0")
+	//register_event("HLTV", "event_round_start", "a", "1=0", "2=0")
 	
 	g_msg_sync = CreateHudSyncObj()
 	g_maxplayers = get_maxplayers()
