@@ -305,7 +305,7 @@ start_shadow_mode()
 	static id, i,  has_shadow
 	has_shadow = false
 	for (i = 1; i <= g_maxplayers; i++) {
-		if(!is_user_connected(i))
+		if(!is_user_alive(i))
 			continue;
 
 		if(zp_get_zombie_special_class(i) == g_speciald) {
