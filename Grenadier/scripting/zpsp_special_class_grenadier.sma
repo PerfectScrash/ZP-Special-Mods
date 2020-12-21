@@ -12,6 +12,10 @@
 
 				* 1.0:
 					First Release
+					
+				* 1.1:
+					- Fixed Zombie health (Some times zombies have same health as first zombie)
+					- Fixed Bug that player sometimes don't turn into plasma when round starts
 
 */
 
@@ -269,7 +273,7 @@ public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type) {
 public zp_player_spawn_post(id) {
 	// Check for current mode
 	if(zp_get_current_mode() == g_gameid)
-		zp_infect_user(id)
+		zp_infect_user(id, 0, 1, 0)
 }
 
 public zp_round_started_pre(game)
@@ -369,7 +373,7 @@ start_grenadier_mode()
 			continue;
 			
 		// Turn into a zombie
-		zp_infect_user(id)
+		zp_infect_user(id, 0, 1, 0)
 	}
 
 }
