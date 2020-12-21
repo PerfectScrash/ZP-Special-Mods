@@ -216,7 +216,7 @@ public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type) {
 public zp_player_spawn_post(id) {
 	// Check for current mode
 	if(zp_get_current_mode() == g_gameid)
-		zp_infect_user(id)
+		zp_infect_user(id, 0, 1, 0)
 }
 
 public zp_round_started_pre(game) {
@@ -292,7 +292,7 @@ start_xiter_mode() {
 			continue;
 			
 		// Turn into a zombie
-		zp_infect_user(id)
+		zp_infect_user(id, 0, 1, 0)
 	}
 }
 
