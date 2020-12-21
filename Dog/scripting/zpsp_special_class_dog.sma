@@ -280,6 +280,9 @@ start_dog_mode() {
 	static id, i, has_dog
 	has_dog = false
 	for (i = 1; i <= g_maxplayers; i++) {
+		if(!is_user_alive(i)) 
+			continue;
+
 		if(zp_get_zombie_special_class(i) == g_speciald) {
 			id = i
 			has_dog = true
