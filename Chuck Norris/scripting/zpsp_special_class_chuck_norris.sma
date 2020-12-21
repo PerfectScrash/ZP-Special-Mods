@@ -17,9 +17,9 @@
 					- Fixed Frozen Bug (Not Frozing in some times)
 					- Added More messages
 
-			* 1.2:
-				- Fixed Zombie health (Some times zombies have same health as first zombie)
-				- Fixed Bug that player sometimes don't turn into plasma when round starts
+				* 1.2:
+					- Fixed Zombie health (Some times zombies have same health as first zombie)
+					- Fixed Bug that player sometimes don't turn into plasma when round starts
 */
 
 #include <amxmodx>
