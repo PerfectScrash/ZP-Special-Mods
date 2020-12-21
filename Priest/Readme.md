@@ -14,5 +14,9 @@
   * 1.1:
     - Fixed Ambience
     - Added p_model
+
+  * 1.2:
+    - Fixed Zombie health (Some times zombies have same health as first zombie)
+    - Fixed Bug that player sometimes don't turn into plasma when round starts
     
 ### Download Resources: https://github.com/PerfectScrash/ZP-Special-Mods/raw/master/Priest/resources.zip
