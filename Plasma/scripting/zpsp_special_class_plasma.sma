@@ -282,7 +282,10 @@ public zp_round_started_pre(game) {
 	{
 		// Check for min players
 		if(zp_get_alive_players() < get_pcvar_num(cvar_minplayers))
-			return ZP_PLUGIN_HANDLED		
+			return ZP_PLUGIN_HANDLED	
+
+		// Start our new mode
+		start_plasma_mode()
 	}
 	return PLUGIN_CONTINUE
 }
@@ -306,9 +309,6 @@ public zp_round_started(game, id) {
 		
 		// Set task to start ambience sounds
 		set_task(2.0, "start_ambience_sounds", TASK_AMB)
-
-		// Start our new mode
-		start_plasma_mode()
 	}
 }
 
