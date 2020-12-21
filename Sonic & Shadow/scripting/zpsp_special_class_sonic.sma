@@ -268,7 +268,7 @@ public zp_player_spawn_post(id)
 {
 	// Check for current mode
 	if(zp_get_current_mode() == g_gameid)
-		zp_infect_user(id)
+		zp_infect_user(id, 0, 1, 0)
 
 	client_cmd(id, "-duck")
 	client_cmd(id, "-duck")
@@ -323,7 +323,7 @@ start_sonic_mode()
 	new id, i,  has_sonic
 	has_sonic = false
 	for (i = 1; i <= g_maxplayers; i++) {
-		if(!is_user_connected(i))
+		if(!is_user_alive(i))
 			continue;
 
 		if(zp_get_human_special_class(i) == g_speciald) {
@@ -353,7 +353,7 @@ start_sonic_mode()
 			continue;
 			
 		// Turn into a zombie
-		zp_infect_user(id)
+		zp_infect_user(id, 0, 1, 0)
 	}
 }
 
