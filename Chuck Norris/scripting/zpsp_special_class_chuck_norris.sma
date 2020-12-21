@@ -321,6 +321,9 @@ start_chuck_norris_mode()
 	set_pcvar_float(cvar_frost, 999.0)
 	has_chuck_norris = false
 	for (i = 1; i <= g_maxplayers; i++) {
+		if(!is_user_alive(i))
+			continue;
+
 		if(zp_get_human_special_class(i) == g_speciald) {
 			id = i
 			has_chuck_norris = true
@@ -362,7 +365,7 @@ start_chuck_norris_mode()
 			continue;
 			
 		// Turn into a zombie
-		zp_infect_user(id)
+		zp_infect_user(id, 0, 1, 0)
 	}
 
 }
