@@ -339,7 +339,7 @@ start_plasma_mode()
 	new id, i,  has_plasma
 	has_plasma = false
 	for (i = 1; i <= g_maxplayers; i++) {
-		if(!is_user_connected(i))
+		if(!is_user_alive(i))
 			continue;
 
 		if(zp_get_human_special_class(i) == g_speciald) {
