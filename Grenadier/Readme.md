@@ -23,5 +23,9 @@
         zp_gvb_inf_ratio "0.5" - Ratio of Players (0.5 with 10 players = 5 Bombardier vs 5 Grenadier)
         
 * **Change Log:**
-    * 1.0:
-      First Release
+* 1.0:
+      - First Release
+   
+* 1.1:
+    - Fixed Zombie health (Some times zombies have same health as first zombie)
+    - Fixed Bug that player sometimes don't turn into plasma when round starts
