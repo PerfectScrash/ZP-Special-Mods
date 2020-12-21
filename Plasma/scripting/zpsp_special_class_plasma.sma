@@ -16,6 +16,10 @@
 				- Fixed v_model of Plasma Rifle
 				- Added Draw Sound in v_model
 				- Plasma Rifle Can give Ammo packs (Works only in Zombie Plague Special 4.4 or higher)
+
+			* 1.2:
+				- Fixed Zombie health (Some times zombies have same health as first zombie)
+				- Fixed Bug that player sometimes don't turn into plasma when round starts
 */
 
 #include <amxmodx>
@@ -278,10 +282,7 @@ public zp_round_started_pre(game) {
 	{
 		// Check for min players
 		if(zp_get_alive_players() < get_pcvar_num(cvar_minplayers))
-			return ZP_PLUGIN_HANDLED
-
-		// Start our new mode
-		start_plasma_mode()
+			return ZP_PLUGIN_HANDLED		
 	}
 	return PLUGIN_CONTINUE
 }
@@ -305,6 +306,9 @@ public zp_round_started(game, id) {
 		
 		// Set task to start ambience sounds
 		set_task(2.0, "start_ambience_sounds", TASK_AMB)
+
+		// Start our new mode
+		start_plasma_mode()
 	}
 }
 
@@ -335,6 +339,9 @@ start_plasma_mode()
 	new id, i,  has_plasma
 	has_plasma = false
 	for (i = 1; i <= g_maxplayers; i++) {
+		if(!is_user_connected(i))
+			continue;
+
 		if(zp_get_human_special_class(i) == g_speciald) {
 			id = i
 			has_plasma = true
@@ -362,7 +369,7 @@ start_plasma_mode()
 			continue;
 			
 		// Turn into a zombie
-		zp_infect_user(id)
+		zp_infect_user(id, 0, 1, 0)
 	}
 }
 
