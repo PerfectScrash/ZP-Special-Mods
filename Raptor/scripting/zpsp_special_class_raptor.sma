@@ -276,6 +276,9 @@ start_raptor_mode()
 	new id, i,  has_raptor
 	has_raptor = false
 	for (i = 1; i <= g_maxplayers; i++) {
+		if(!is_user_alive(i))
+			continue;
+
 		if(zp_get_zombie_special_class(i) == g_speciald) {
 			id = i
 			has_raptor = true
