@@ -8,9 +8,13 @@
     zp_grenadier_damage_multi "1.5" - Knife Damage Multi
 
 * **Change Log:**
-    * 1.0:
-      First Release
-      
+* 1.0:
+    - First Release
+
+* 1.1:
+    - Fixed Zombie health (Some times zombies have same health as first zombie)
+    - Fixed Bug that player sometimes don't turn into plasma when round starts
+
 ## [ZPSp] Game Mode: Grenadier Vs Bombardier
 
 * **Description:**
@@ -24,8 +28,6 @@
         
 * **Change Log:**
 * 1.0:
-      - First Release
+    - First Release
    
-* 1.1:
-    - Fixed Zombie health (Some times zombies have same health as first zombie)
-    - Fixed Bug that player sometimes don't turn into plasma when round starts
+
