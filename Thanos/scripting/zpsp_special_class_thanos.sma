@@ -425,6 +425,9 @@ start_mode()
 	static id, i, has, name[32]; 
 	has = false
 	for (i = 1; i <= g_maxplayers; i++) {
+		if(is_user_alive(i))
+			continue;
+
 		if(zp_get_zombie_special_class(i) == g_speciald) {
 			id = i						// Get Thanos Index
 			has = true
