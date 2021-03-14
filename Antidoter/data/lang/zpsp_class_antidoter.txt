@@ -1,0 +1,15 @@
+[bp]
+ANTIDOTER_CLASS_NAME = Ze Gotinha
+START_ANTIDOTER = %s eh o %L
+
+[en]
+ANTIDOTER_CLASS_NAME = Antidoter
+START_ANTIDOTER = %s is an %L
+
+[es]
+ANTIDOTER_CLASS_NAME = Antidoter
+START_ANTIDOTER = %s eres el %L
+
+[pt]
+ANTIDOTER_CLASS_NAME = Antidoter
+START_ANTIDOTER = %s eh o %L
