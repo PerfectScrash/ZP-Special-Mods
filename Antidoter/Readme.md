@@ -1,7 +1,5 @@
 # [ZPSp] Special Class: Antidoter 
 
-
-
 ## Description:
 - Cure zombies with vaccine of T-Virus
 
@@ -10,5 +8,9 @@
 - zp_antidoter_damage_multi "2.0"		// Vaccine M4A1 Damage multi
 - zp_antidoter_knife_damage "1000"		// Knife Damage
 - zp_antidoter_disinfect_reward "2"		// Amount of ammo pack's reward
+
+## Changelog:
+- 1.0: First release.
+- 1.1: Fixed error log
 
 # Download Link: https://github.com/PerfectScrash/ZP-Special-Mods/raw/master/Antidoter/Resources.zip
