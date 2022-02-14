@@ -1,0 +1,59 @@
+[en]
+CANNIBAL_PREFIX = ^4[ZP Cannibal Mode]^1
+CANNIBAL_MODNAME = Cannibal
+CANNIBAL_START = Cannibal Mode !!!
+CANNIBAL_WINNER = Player ^3'%s'^1 was winner the Cannibal Mode and won ^3%d Ammopack(s)
+CANNIBAL_EVOLUTION = Player ^3%s^1 eat ^3%d zombie(s)^1 and evolute to ^3Nemesis^4 !!!
+
+TAG_PREFIX = ^4[ZP Tag Mode]^1
+TAG_MODNAME = Tag Mode
+TAG_WINNER = The Winner of ^3Tag Mode^1 are is ^3'%s'^1 and won ^3%d Ammopacks ^1!!!
+TAG_CHOOSED = Are choosed ^3%d Zombie(s)^1 for this stage ^4-|-^1 Time for end a current stage: ^3%d Second(s)
+TAG_START = Tag Mode !!!
+TAG_EXPLODES = -= TAG MODE =-^n-= Zombies Will Explode in =- ^n***NOW***
+TAG_COUNTDOWN = -= TAG MODE =-^n-= Zombies Will Explode in %d Second(s) =-^n[%s]
+
+GRAVITY_MODNAME = Gravity
+GRAVITY_START = Gravity Mode !!!
+DM_MODNAME = Deathmatch
+DM_START = Deathmatch Mode !!!
+
+[bp]
+CANNIBAL_PREFIX = ^4[ZP Cannibal Mode]^1
+CANNIBAL_MODNAME = Cannibal
+CANNIBAL_START = Cannibal Mode !!!
+CANNIBAL_WINNER = O Jogador ^3'%s'^1 Foi o devorador supremo e ganhou ^3%d Ammopack(s)
+CANNIBAL_EVOLUTION = O Jogador ^3%s^1 devorou ^3%d Zumbi(s)^1 e evoluiu a ^3Nemesis^4 !!!
+
+TAG_PREFIX = ^4[ZP Tag Mode]^1
+TAG_MODNAME = Tag Mode
+TAG_WINNER = O Vencedor do ^3Tag Mode^1 eh o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
+TAG_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
+TAG_START = Tag Mode !!!
+TAG_EXPLODES = -= TAG MODE =-^n-= Zombies iram explodir =- ^n***AGORA***
+TAG_COUNTDOWN = -= TAG MODE =-^n-= Zombies iram explodir em %d Segundo(s) =-^n[%s]
+
+GRAVITY_MODNAME = Baixa Gravidade
+GRAVITY_START = Modo Baixa Gravidade !!!
+DM_MODNAME = Deathmatch
+DM_START = Modo Deathmatch !!!
+
+[pt]
+CANNIBAL_PREFIX = ^4[ZP Cannibal Mode]^1
+CANNIBAL_MODNAME = Cannibal
+CANNIBAL_START = Cannibal Mode !!!
+CANNIBAL_WINNER = O Jogador ^3'%s'^1 Foi o devorador supremo e ganhou ^3%d Ammopack(s)
+CANNIBAL_EVOLUTION = O Jogador ^3%s^1 devorou ^3%d Zumbi(s)^1 e evoluiu a ^3Nemesis^4 !!!
+
+TAG_PREFIX = ^4[ZP Pega pega]^1
+TAG_MODNAME = Modo Pega Pega
+TAG_WINNER = O Vencedor do ^3Pega pega^1 eh o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
+TAG_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
+TAG_START = Modo Pega Pega !!!
+TAG_EXPLODES = -= PEGA PEGA =-^n-= Zumbis iram explodir =- ^n***AGORA***
+TAG_COUNTDOWN = -= PEGA PEGA =-^n-= Zumbis iram explodir em %d Segundo(s) =-^n[%s]
+
+GRAVITY_MODNAME = Baixa Gravidade
+GRAVITY_START = Modo Baixa Gravidade !!!
+DM_MODNAME = Rodada da morte
+DM_START = Modo Rodada da morte !!!

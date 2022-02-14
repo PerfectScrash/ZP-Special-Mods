@@ -1,4 +1,5 @@
 [en]
+CHUCK_NORRIS_NAME = Chuck Noris
 NOTICE_CHUCK_NORRIS = %s is an Chuck Noris !!!
 CHUCK_MSG1 = No point in running away from ^nChuck Norris^nHe thinks you're up in the belly of his mother
 CHUCK_MSG2 = One day Chuck Norris^nlet out a fart^nThus was created the Sun
@@ -21,6 +22,7 @@ CHUCK_MSG18 = Chuck Norris nao sente dor^nEh a Dor que sente Chuck Norris
 CHUCK_COUNTDOWN = :: %d ::^nCount for the Zombies hide yourselves is Chuck Norris^nEven if the death is all true.
 
 [bp]
+CHUCK_NORRIS_NAME = Chuck Norris
 NOTICE_CHUCK_NORRIS = %s eh o Chuck Norris !!!
 CHUCK_MSG1 = Nao adianta fugir de^nChuck Norris^nEle te acha ate na^nBarriga da sua Mae
 CHUCK_MSG2 = Um dia Chuck Norris^nSoltou um Pum^nAssim foi criado o Sol
