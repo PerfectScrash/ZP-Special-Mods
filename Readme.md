@@ -1,5 +1,5 @@
 # ZP Special Class/Gamemodes
-*Special Classes and Game modes for Zombie Plague Special (4.4 or higher)*
+*Special Classes and Game modes for Zombie Plague Special (4.5 or higher)*
 
 # Donate:
 - If you want to donate for my works to encourage me to continue with the work feel free to donate 
