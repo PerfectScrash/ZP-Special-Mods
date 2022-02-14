@@ -13,6 +13,7 @@
 	* Changelog:
 		- 1.0: First release.
 		- 1.1: Fixed error log
+		- 1.2: Added ZPSp 4.5 Support
 */
 
 
@@ -23,24 +24,14 @@
 #include <zombie_plague_special>
 #include <amx_settings_api>
 
-#if ZPS_INC_VERSION < 44
-	#assert Zombie Plague Special 4.4 (Beta) Include File Required. Download Link: https://forums.alliedmods.net/showthread.php?t=260845
+#if ZPS_INC_VERSION < 45
+	#assert Zombie Plague Special 4.5 Include File Required. Download Link: https://forums.alliedmods.net/showthread.php?t=260845
 #endif
 
-new const ZP_CUSTOMIZATION_FILE[] = "zombie_plague_special.ini"
-new const ZP_SPECIAL_CLASSES_FILE[] = "zpsp_special_classes.ini"
-new const ZP_GAMEMODES_FILE[] = "zpsp_gamemodes.ini"
-
-new Array:g_sound_antidoter, g_ambience_sounds, Array:g_sound_ambience_dur, Array: g_sound_ambience
-
-// Default Sounds
-new const sound_antidoter[][] = { "items/smallmedkit1.wav" }
-new const ambience_sound[][] = { "media/Half-Life02.mp3" } 
-new const ambience_antidoter_dur[][] = { "104" }
-
-const OFFSET_WEAPONOWNER = 41
-const OFFSET_LINUX_WEAPONS = 4
-
+/*-------------------------------------
+--> Class Configs
+--------------------------------------*/
+#define Make_Acess ADMIN_IMMUNITY 	// Flag Acess make
 new const sp_name[] = "Antidoter"
 new const sp_model[] = "zpsp_antidoter_br"
 new const sp_hp = 7000
@@ -49,43 +40,65 @@ new const Float:sp_gravity = 0.65
 new const sp_aura_size = 0
 new const sp_clip_type = 2 // Unlimited Ammo (0 - Disable | 1 - Unlimited Semi Clip | 2 - Unlimited Clip)
 new const sp_allow_glow = 0
-new const sp_color_r = 255
-new const sp_color_g = 255
-new const sp_color_b = 255
-new const default_flag_acess[] = "a"
-new acess_flags[2]
+new sp_color_rgb[3] = { 255, 255, 255 }
 
 // Default M4A1/Knife Models
 new const default_v_knife[] = "models/zombie_plague/v_knife_antidoter_br.mdl"
 new const default_v_m4a1[] = "models/zombie_plague/v_m4a1_antidoter_br.mdl"
 new const default_p_m4a1[] = "models/zombie_plague/p_m4a1_antidoter_br.mdl"
 
-new const WeaponSounds[][] =
-{
+new const WeaponSounds[][] = {
 	"zpsp_antidoter/fire_sound_silen.wav",
 	"zpsp_antidoter/fire_sound.wav"
 }
 
-// Variables
-new g_gameid, g_msg_sync, cvar_minplayers, g_special_id, cvar_damage, cvar_damage_knife, cvar_rwd_ap
-new v_m4a1_model[64], p_m4a1_model[64], v_knife_model[64], g_msgDeathMsg, g_msgScoreAttrib, tracer_sprite, tracer_sprite2, g_orig_event
-new const g_chance = 90
+/*-------------------------------------
+--> Ambience/Round Sound Config
+--------------------------------------*/
+// Ambience enums
+enum _handler { AmbiencePrecache[64], Float:AmbienceDuration }
 
 // Enable Ambience?
-#define AMBIENCE_ENABLE 1
+const ambience_enable = 1
 
-// Ambience sounds task
-#define TASK_AMB 3256
+// Ambience sounds
+new const gamemode_ambiences[][_handler] = {	
+	// Sounds					// Duration
+	{ "media/Half-Life02.mp3", 104.0 }
+}
 
+// Round start sounds
+new const gamemode_round_start_snd[][] = { 
+	"items/smallmedkit1.wav"
+}
+
+/*-------------------------------------
+--> Gamemode Config
+--------------------------------------*/
+new const g_chance = 90						// Gamemode chance
+#define Start_Mode_Acess ADMIN_IMMUNITY
+
+/*-------------------------------------
+--> Variables/Defines
+--------------------------------------*/
+new g_gameid, g_msg_sync, cvar_minplayers, g_special_id, cvar_damage, cvar_damage_knife
+new v_m4a1_model[64], p_m4a1_model[64], v_knife_model[64], tracer_sprite, tracer_sprite2, g_orig_event
+const OFFSET_WEAPONOWNER = 41
+const OFFSET_LINUX_WEAPONS = 4
+
+#define GetUserAntidoter(%1) (zp_get_human_special_class(%1) == g_special_id)
+#define IsAntidoterRound() (zp_get_current_mode() == g_gameid)
+
+/*-------------------------------------
+--> Plugin Registeration
+--------------------------------------*/
 public plugin_init() {
-	// Plugin registeration.
-	register_plugin("[ZP] Class Antidoter","1.1", "[P]erfec[T] [S]cr[@]s[H]")
+	register_plugin("[ZPSp] Special Class: Antidoter", "1.2", "[P]erfec[T] [S]cr[@]s[H]")
 	register_dictionary("zpsp_class_antidoter.txt")
 	
 	cvar_minplayers = register_cvar("zp_antidoter_minplayers", "2")
 	cvar_damage = register_cvar("zp_antidoter_damage_multi", "2.0") 
 	cvar_damage_knife = register_cvar("zp_antidoter_knife_damage", "1000") 
-	cvar_rwd_ap = register_cvar("zp_antidoter_disinfect_reward", "2") 
 
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
 	RegisterHam(Ham_Item_Deploy, "weapon_m4a1", "SetWeaponModel", 1);
@@ -96,28 +109,23 @@ public plugin_init() {
 	register_forward(FM_UpdateClientData, "fw_UpdateClientData_Post", 1)
 
 	g_msg_sync = CreateHudSyncObj()
-	g_msgDeathMsg = get_user_msgid("DeathMsg")
-	g_msgScoreAttrib = get_user_msgid("ScoreAttrib")
 }
 
-// Game modes MUST be registered in plugin precache ONLY
+/*-------------------------------------
+--> Plugin Precache
+--------------------------------------*/
 public plugin_precache() {
 	register_forward(FM_PrecacheEvent, "fwPrecacheEvent_Post", 1)
 
-	// Read the access flag
-	static user_access[40], i, buffer[250]
-	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "START MODE ANTIDOTER", user_access, charsmax(user_access))) {
-		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "START MODE ANTIDOTER", default_flag_acess)
-		formatex(user_access, charsmax(user_access), default_flag_acess)
-	}
-	acess_flags[0] = read_flags(user_access)
+	// Register our game mode
+	g_gameid = zpsp_register_gamemode(sp_name, Start_Mode_Acess, g_chance, 0, 0, .uselang=1, .langkey="ANTIDOTER_CLASS_NAME")
+	g_special_id = zp_register_human_special(sp_name, sp_model, sp_hp, sp_speed, sp_gravity, Make_Acess, sp_clip_type, sp_aura_size, sp_allow_glow, sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2])
 	
-	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "MAKE ANTIDOTER", user_access, charsmax(user_access))) {
-		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "MAKE ANTIDOTER", default_flag_acess)
-		formatex(user_access, charsmax(user_access), default_flag_acess)
-	}
-	acess_flags[1] = read_flags(user_access)
+	// Set lang configuration
+	amx_save_setting_int(ZP_SPECIAL_CLASSES_FILE, sp_name, "NAME BY LANG", 1)
+	amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, sp_name, "LANG KEY", "ANTIDOTER_CLASS_NAME")
 	
+		
 	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "V_M4A1 ANTIDOTER", v_m4a1_model, charsmax(v_m4a1_model))) {
 		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "V_M4A1 ANTIDOTER", default_v_m4a1)
 		formatex(v_m4a1_model, charsmax(v_m4a1_model), default_v_m4a1)
@@ -136,75 +144,22 @@ public plugin_precache() {
 	}
 	precache_model(v_knife_model)
 
-	// Set lang configuration
-	amx_save_setting_int(ZP_SPECIAL_CLASSES_FILE, sp_name, "NAME BY LANG", 1)
-	amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, sp_name, "LANG KEY", "ANTIDOTER_CLASS_NAME")
-	amx_save_setting_int(ZP_GAMEMODES_FILE, sp_name, "GAMEMODE NAME BY LANG", 1)
-	amx_save_setting_string(ZP_GAMEMODES_FILE, sp_name, "GAMEMODE LANG KEY", "ANTIDOTER_CLASS_NAME")
-	
-	g_sound_antidoter = ArrayCreate(64, 1)
-	g_sound_ambience = ArrayCreate(64, 1)
-	g_sound_ambience_dur = ArrayCreate(64, 1)
-	
-	// Load from external file
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Sounds", "ROUND ANTIDOTER", g_sound_antidoter)
-	
-	// Precache the play sounds
-	if (ArraySize(g_sound_antidoter) == 0) {
-		for (i = 0; i < sizeof sound_antidoter; i++)
-			ArrayPushString(g_sound_antidoter, sound_antidoter[i])
-		
-		// Save to external file
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Sounds", "ROUND ANTIDOTER", g_sound_antidoter)
-	}
-	
-	// Precache sounds
-	for (i = 0; i < ArraySize(g_sound_antidoter); i++) {
-		ArrayGetString(g_sound_antidoter, i, buffer, charsmax(buffer))
-		precache_ambience(buffer)
-	}
-	
-	// Ambience Sounds
-	g_ambience_sounds = AMBIENCE_ENABLE
-	if(!amx_load_setting_int(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "ANTIDOTER ENABLE", g_ambience_sounds))
-		amx_save_setting_int(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "ANTIDOTER ENABLE", g_ambience_sounds)
-	
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "ANTIDOTER SOUNDS", g_sound_ambience)
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "ANTIDOTER DURATIONS", g_sound_ambience_dur)
-	
-	
-	// Save to external file
-	if (ArraySize(g_sound_ambience) == 0) {
-		for (i = 0; i < sizeof ambience_sound; i++)
-			ArrayPushString(g_sound_ambience, ambience_sound[i])
-		
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "ANTIDOTER SOUNDS", g_sound_ambience)
-	}
-	
-	if (ArraySize(g_sound_ambience_dur) == 0) {
-		for (i = 0; i < sizeof ambience_antidoter_dur; i++)
-			ArrayPushString(g_sound_ambience_dur, ambience_antidoter_dur[i])
-		
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "ANTIDOTER DURATIONS", g_sound_ambience_dur)
-	}
-	
-	// Ambience Sounds
-	if (g_ambience_sounds) {
-		for (i = 0; i < ArraySize(g_sound_ambience); i++) {
-			ArrayGetString(g_sound_ambience, i, buffer, charsmax(buffer))
-			precache_ambience(buffer)
-		}
-	}
-
 	tracer_sprite = precache_model("sprites/blue.spr");
 	tracer_sprite2 = precache_model("sprites/blue2.spr");
 
+	static i
+	// Precache weapon sound
 	for(i = 0; i < sizeof WeaponSounds; i++)
 		precache_sound(WeaponSounds[i])
 
-	// Register our game mode
-	g_gameid = zpsp_register_gamemode(sp_name, acess_flags[0], g_chance, 0, 0)
-	g_special_id = zp_register_human_special(sp_name, sp_model, sp_hp, sp_speed, sp_gravity, acess_flags[1], sp_clip_type, sp_aura_size, sp_allow_glow, sp_color_r, sp_color_g, sp_color_b)
+	// Register round start sound
+	for(i = 0; i < sizeof gamemode_round_start_snd; i++)
+		zp_register_start_gamemode_snd(g_gameid, gamemode_round_start_snd[i])
+
+	// Register ambience sounds
+	for (i = 0; i < sizeof gamemode_ambiences; i++)
+		zp_register_gamemode_ambience(g_gameid, gamemode_ambiences[i][AmbiencePrecache], gamemode_ambiences[i][AmbienceDuration], ambience_enable)
+
 }
 
 public fwPrecacheEvent_Post(type, const name[]) {
@@ -215,18 +170,45 @@ public fwPrecacheEvent_Post(type, const name[]) {
 	return FMRES_IGNORED
 }
 
+/*-------------------------------------
+--> Natives
+--------------------------------------*/
 public plugin_natives() {
-	register_native("zp_get_user_antidoter", "native_get_user_antidoter", 1)
-	register_native("zp_make_user_antidoter", "native_make_user_antidoter", 1)
-	register_native("zp_get_antidoter_count", "native_get_antidoter_count", 1)
-	register_native("zp_is_antidoter_round", "native_is_antidoter_round", 1)
+	register_native("zp_get_user_antidoter", "native_get_user_antidoter")
+	register_native("zp_make_user_antidoter", "native_make_user_antidoter")
+	register_native("zp_get_antidoter_count", "native_get_antidoter_count")
+	register_native("zp_is_antidoter_round", "native_is_antidoter_round")
 }
+public native_get_user_antidoter(plugin_id, num_params)
+	return GetUserAntidoter(get_param(1));
+	
+public native_make_user_antidoter(plugin_id, num_params)
+	return zp_make_user_special(get_param(1), g_special_id, GET_HUMAN);
+	
+public native_get_antidoter_count(plugin_id, num_params)
+	return zp_get_special_count(GET_HUMAN, g_special_id);
+	
+public native_is_antidoter_round(plugin_id, num_params)
+	return (IsAntidoterRound());
 
+/*-------------------------------------
+--> Class/Weapon Functions
+--------------------------------------*/
+public zp_user_humanized_post(id) {
+	if(!GetUserAntidoter(id)) 
+		return;
+
+	if(!zp_has_round_started())
+		zp_set_custom_game_mod(g_gameid) // Force Start Antidoter Round
+	
+	zp_give_item(id, "weapon_m4a1")
+	cs_set_user_bpammo(id, CSW_M4A1, 90)
+}
 public fw_UpdateClientData_Post(Player, SendWeapons, CD_Handle) {
 	if(!is_user_alive(Player))
 		return FMRES_IGNORED
 
-	if(zp_get_user_zombie(Player) || (get_user_weapon(Player) != CSW_M4A1) || zp_get_human_special_class(Player) != g_special_id)
+	if(zp_get_user_zombie(Player) || (get_user_weapon(Player) != CSW_M4A1) || !GetUserAntidoter(Player))
 		return FMRES_IGNORED
 
 	set_cd(CD_Handle, CD_flNextAttack, get_gametime() + 0.001)
@@ -242,7 +224,7 @@ public fwPlaybackEvent(flags, invoker, eventid, Float:delay, Float:origin[3], Fl
 	if(!is_user_alive(invoker))
 		return FMRES_IGNORED
 
-	if(zp_get_human_special_class(invoker) != g_special_id || zp_get_user_zombie(invoker))
+	if(!GetUserAntidoter(invoker) || zp_get_user_zombie(invoker))
 		return FMRES_IGNORED;
 
 	engfunc(EngFunc_PlaybackEvent, flags | FEV_HOSTONLY, invoker, eventid, delay, origin, angles, fparam1, fparam2, iParam1, iParam2, bParam1, bParam2)
@@ -261,7 +243,7 @@ public fw_PrimaryAttack_Post(weapon_entity) {
 	if(!is_user_alive(id))
 		return HAM_IGNORED;
 
-	if(zp_get_human_special_class(id) != g_special_id || zp_get_user_zombie(id))
+	if(!GetUserAntidoter(id) || zp_get_user_zombie(id))
 		return HAM_IGNORED;
 
 	if(get_user_weapon(id) != CSW_M4A1)
@@ -316,7 +298,7 @@ public fw_Reload_Post(weapon_entity) {
 	if(!is_user_alive(id))
 		return HAM_IGNORED;
 
-	if(zp_get_human_special_class(id) != g_special_id || zp_get_user_zombie(id))
+	if(!GetUserAntidoter(id) || zp_get_user_zombie(id))
 		return FMRES_IGNORED;
 
 	if(get_user_weapon(id) != CSW_M4A1)
@@ -337,7 +319,7 @@ public SetWeaponModel(weapon_entity) {
 	if (!is_user_alive(id))
 		return HAM_IGNORED;
 
-	if(zp_get_user_zombie(id) || zp_get_human_special_class(id) != g_special_id)
+	if(zp_get_user_zombie(id) || !GetUserAntidoter(id))
 		return HAM_IGNORED
 	
 	static user_wpn;
@@ -359,7 +341,7 @@ public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type) {
 	if(!is_user_alive(attacker))
 		return HAM_IGNORED;
 
-	if(zp_get_human_special_class(attacker) != g_special_id || zp_get_user_zombie(attacker))
+	if(!GetUserAntidoter(attacker) || zp_get_user_zombie(attacker))
 		return HAM_IGNORED;
 	
 	static userWpn
@@ -369,9 +351,7 @@ public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type) {
 
 		if(pev(victim, pev_health) <= damage) {
 			if(zp_get_user_zombie(victim) && !zp_get_user_last_zombie(victim)) {
-				SendDeathMsg(attacker, victim)
-				zp_set_user_ammo_packs(attacker, zp_get_user_ammo_packs(attacker) + get_pcvar_num(cvar_rwd_ap))
-				zp_disinfect_user(victim, 1)
+				zp_disinfect_user(victim, 1, attacker)
 				return HAM_SUPERCEDE;
 			}
 		}
@@ -394,9 +374,11 @@ public reset_render(id) {
 	zp_reset_user_rendering(id)
 }
 
-// Player spawn post
+/*-------------------------------------
+--> Gamemode Functions
+--------------------------------------*/
 public zp_player_spawn_post(id) {
-	if(zp_get_current_mode() == g_gameid)
+	if(IsAntidoterRound())
 		zp_infect_user(id)
 }
 
@@ -407,28 +389,12 @@ public zp_round_started_pre(game) {
 	if(zp_get_alive_players() < get_pcvar_num(cvar_minplayers))
 		return ZP_PLUGIN_HANDLED
 
-	start_antidoter_mode()
-
 	return PLUGIN_CONTINUE
 }
 
 public zp_round_started(game, id) {
-	if(game != g_gameid)
-		return;
-
-	static sound[100]
-	ArrayGetString(g_sound_antidoter, random_num(0, ArraySize(g_sound_antidoter) - 1), sound, charsmax(sound))
-	zp_play_sound(0, sound)
-	
-	remove_task(TASK_AMB)
-	set_task(2.0, "start_ambience_sounds", TASK_AMB)
-}
-
-public zp_game_mode_selected(gameid, id) {
-	if(gameid == g_gameid)
-		start_antidoter_mode()
-	
-	return PLUGIN_CONTINUE
+	if(game == g_gameid)
+		start_antidoter_mode();
 }
 
 start_antidoter_mode() {
@@ -438,7 +404,7 @@ start_antidoter_mode() {
 		if(!is_user_alive(i))
 			continue
 
-		if(zp_get_human_special_class(i) == g_special_id) {
+		if(GetUserAntidoter(i)) {
 			id = i
 			has_antidoter = true
 			break;
@@ -451,7 +417,7 @@ start_antidoter_mode() {
 	}
 	
 	static name[32]; get_user_name(id, name, charsmax(name));
-	set_hudmessage(sp_color_r, sp_color_g, sp_color_b, -1.0, 0.17, 1, 0.0, 5.0, 1.0, 1.0, -1)
+	set_hudmessage(sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2], -1.0, 0.17, 1, 0.0, 5.0, 1.0, 1.0, -1)
 	ShowSyncHudMsg(0, g_msg_sync, "%L", LANG_PLAYER, "START_ANTIDOTER", name, LANG_PLAYER, "ANTIDOTER_CLASS_NAME")
 		
 	// Turn the remaining players into zombies
@@ -459,93 +425,16 @@ start_antidoter_mode() {
 		if(!is_user_alive(id))
 			continue;
 			
-		if(zp_get_human_special_class(id) == g_special_id || zp_get_user_zombie(id))
+		if(GetUserAntidoter(id) || zp_get_user_zombie(id))
 			continue;
 
 		zp_infect_user(id)
 	}
 }
 
-public start_ambience_sounds() {
-	if (!g_ambience_sounds)
-		return;
-	
-	// Variables
-	static amb_sound[64], sound,  str_dur[20]
-	
-	// Select our ambience sound
-	sound = random_num(0, ArraySize(g_sound_ambience)-1)
-
-	ArrayGetString(g_sound_ambience, sound, amb_sound, charsmax(amb_sound))
-	ArrayGetString(g_sound_ambience_dur, sound, str_dur, charsmax(str_dur))
-	
-	zp_play_sound(0, amb_sound)
-	
-	// Start the ambience sounds
-	set_task(str_to_float(str_dur), "start_ambience_sounds", TASK_AMB)
-}
-public zp_round_ended()
-	remove_task(TASK_AMB);
-
-public zp_user_humanized_post(id) {
-	if(zp_get_human_special_class(id) != g_special_id) 
-		return;
-
-	if(!zp_has_round_started())
-		zp_set_custom_game_mod(g_gameid) // Force Start Antidoter Round
-	
-	fm_give_item(id, "weapon_m4a1")
-	cs_set_user_bpammo(id, CSW_M4A1, 90)
-}
-
-public native_get_user_antidoter(id)
-	return (zp_get_human_special_class(id) == g_special_id);
-	
-public native_make_user_antidoter(id)
-	return zp_make_user_special(id, g_special_id, GET_HUMAN);
-	
-public native_get_antidoter_count()
-	return zp_get_special_count(GET_HUMAN, g_special_id);
-	
-public native_is_antidoter_round()
-	return (zp_get_current_mode() == g_gameid);
-
-precache_ambience(sound[]) {
-	static buffer[150]
-	if(equal(sound[strlen(sound)-4], ".mp3")) {
-		if(!equal(sound, "sound/", 6) && !file_exists(sound) && !equal(sound, "media/", 6))
-			format(buffer, charsmax(buffer), "sound/%s", sound)
-		else
-			format(buffer, charsmax(buffer), "%s", sound)
-		
-		precache_generic(buffer)
-	}
-	else  {
-		if(equal(sound, "sound/", 6))
-			format(buffer, charsmax(buffer), "%s", sound[6])
-		else
-			format(buffer, charsmax(buffer), "%s", sound)
-
-		precache_sound(buffer)
-	}
-}
-
-SendDeathMsg(attacker, victim) { // Send Death Message for infections
-	message_begin(MSG_BROADCAST, g_msgDeathMsg)
-	write_byte(attacker) // killer
-	write_byte(victim) // victim
-	write_byte(1) // headshot flag
-	write_string("Antidote") // killer's weapon
-	message_end()
-
-	if(is_user_alive(victim)) {
-		message_begin(MSG_BROADCAST, g_msgScoreAttrib)
-		write_byte(victim) // id
-		write_byte(0) // attrib
-		message_end()
-	}
-}
-
+/*-------------------------------------
+--> Stocks
+--------------------------------------*/
 stock create_tracer_water(id, Float:fVec1[3], Float:fVec2[3], HasSilen) {
 	if(!is_user_alive(id))
 		return 0
