@@ -56,6 +56,8 @@
 		- 1.2:
 			- Added Ambience Sounds.
 			- Fixed Bug When thanos killed while time stone are active the players are still stucked for the rest of the round time instead of reseting. (Thanks inlovecs for report)
+		- 1.3:
+			ZPSp 4.5 Support
 
 */
 
@@ -66,11 +68,87 @@
 #include <zombie_plague_special>
 #include <amx_settings_api>
 
-#if ZPS_INC_VERSION < 43
-	#assert Zombie Plague Special 4.3 or Higher Include File Required. Download Link: https://forums.alliedmods.net/showthread.php?t=260845
+#if ZPS_INC_VERSION < 45
+	#assert Zombie Plague Special 4.5 or Higher Include File Required. Download Link: https://forums.alliedmods.net/showthread.php?t=260845
 #endif
 
-new const ZP_CUSTOMIZATION_FILE[] = "zombie_plague_special.ini"
+/*-------------------------------------
+--> Class Config
+--------------------------------------*/
+#define Make_Acess ADMIN_IMMUNITY 	// Flag Acess make
+new const sp_name[] = "Thanos"
+new const sp_model[] = "zp_thanos"
+new const sp_knifemodel[] = "models/zombie_plague/v_knife_thanos.mdl"
+new const sp_painsound[] = "player/bhit_kevlar-1.wav"
+new const sp_hp = 20000
+new const sp_speed = 270
+new const Float:sp_gravity = 0.7
+new const sp_aura_size = 0
+new const Float:sp_knockback = 0.25
+new const sp_allow_glow = 0
+new sp_color_rgb[3] = { 255, 0, 100 }
+
+/*-------------------------------------
+--> Sound Config
+--------------------------------------*/
+// Ambience enums
+enum _handler { AmbiencePrecache[64], Float:AmbienceDuration }
+
+// Enable Ambience?
+const ambience_enable = 1
+
+// Ambience sounds
+new const gamemode_ambiences[][_handler] = {	
+	// Sounds					// Duration
+	{ "zombie_plague/avengers_theam_1.mp3", 121.0 },
+	{ "zombie_plague/avengers_theam_2.mp3", 203.0 }
+}
+
+// Round start sounds
+new const gamemode_round_start_snd[][] = { 
+	"zombie_plague/thanos_i-am-inevitable.wav"
+}
+
+// Skills Sounds
+new const snap_sound[] = "zombie_plague/thanos-snap-fingers.wav"
+new const use_stone[] = "zombie_plague/thanos-use-stone.wav"
+
+/*-------------------------------------
+--> Gamemode Config
+--------------------------------------*/
+new const g_chance = 90						// Gamemode chance
+#define Start_Mode_Acess ADMIN_IMMUNITY
+
+// Variables
+new g_gameid, g_msg_sync, cvar_minplayers, cvar_damage, g_special_id
+new const sprite_ring[] = "sprites/shockwave.spr"
+new TeleportSprite, g_exploSpr, BeamSpr_Id, BubbleSprite
+new g_used_skill[33], g_current_infgem[33], allow_use_all, g_using_skill[33], is_sttoped, g_msgScreenFade, Thunder
+new cvar_skill_countdown, cvar_all_gems_time
+new cvar_power_knockback, cvar_power_radius, cvar_power_damage
+new cvar_soul_radius, cvar_soul_speed, cvar_soul_duration
+new cvar_time_duration, cvar_reality_duration, cvar_mind_duration
+
+enum {
+	POWER = 0, // Poder
+	SPACE, // Espaco (Trisserakit)
+	REALITY, // Realidade
+	SOUL, // Alma
+	MIND, // Mente
+	TIME, // Tempo
+	ALL, // Todas ao mesmo tempo huehuehue
+	MAX_GEMS
+}
+
+new const gem_string[MAX_GEMS][] = { 
+	"POWER_GEM",
+	"SPACE_GEM",
+	"REALITY_GEM",
+	"SOUL_GEM",
+	"MIND_GEM",
+	"TIME_GEM",
+	"ALL_GEMS"
+}
 
 new const WEAPONENTNAMES[][] = { "", "weapon_p228", "", "weapon_scout", "weapon_hegrenade", "weapon_xm1014", "weapon_c4", "weapon_mac10", "weapon_aug", "weapon_smokegrenade", 
 "weapon_elite", "weapon_fiveseven", "weapon_ump45", "weapon_sg550", "weapon_galil", "weapon_famas", "weapon_usp", "weapon_glock18", "weapon_awp", "weapon_mp5navy", "weapon_m249",
@@ -84,85 +162,28 @@ const FFADE_STAYOUT = 0x0004
 const FFADE_IN = 0x0000
 const UNIT_SECOND = (1<<12)
 
-new Array:g_sound, g_ambience_sounds, Array:g_sound_amb_dur, Array: g_sound_ambience, cvar_frost_dur
-
-// Enable Ambience?
-#define AMBIENCE_ENABLE 0
-
-// Default Sounds
-new const sound[][] = { "zombie_plague/thanos_i-am-inevitable.wav" }
-new const ambience_sound[][] = { "zombie_plague/avengers_theam_1.mp3" , "zombie_plague/avengers_theam_2.mp3" } 
-new const ambience_dur[][] = { "121" , "203" }
-new const snap_sound[] = "zombie_plague/thanos-snap-fingers.wav"
-new const use_stone[] = "zombie_plague/thanos-use-stone.wav"
-
-new const sp_name[] = "Thanos"
-new const sp_model[] = "zp_thanos"
-new const sp_knifemodel[] = "models/zombie_plague/v_knife_thanos.mdl"
-new const sp_painsound[] = "player/bhit_kevlar-1.wav"
-new const sp_hp = 20000
-new const sp_speed = 270
-new const Float:sp_gravity = 0.7
-new const sp_aura_size = 0
-new const Float:sp_knockback = 0.25
-new const sp_allow_glow = 0
-new const sp_color_r =  255
-new const sp_color_g = 0
-new const sp_color_b = 100
-new acess_flags[2]
-
-// Variables
-new g_gameid, g_msg_sync, cvar_minplayers, cvar_damage, g_speciald, g_maxplayers
-new const g_chance = 90
-
-new const sprite_ring[] = "sprites/shockwave.spr"
-new TeleportSprite, g_exploSpr, BeamSpr_Id, BubbleSprite
-
-enum {
-	POWER = 0, // Poder
-	SPACE, // Espaco (Trisserakit)
-	REALITY, // Realidade
-	SOUL, // Alma
-	MIND, // Mente
-	TIME, // Tempo
-	ALL, // Todas ao mesmo tempo huehuehue
-	MAX_GEMS
-}
-
-new g_used_skill[33], g_current_infgem[33], allow_use_all, g_using_skill[33], is_sttoped, g_msgScreenFade, Thunder
-new const gem_string[MAX_GEMS][] = { 
-	"POWER_GEM",
-	"SPACE_GEM",
-	"REALITY_GEM",
-	"SOUL_GEM",
-	"MIND_GEM",
-	"TIME_GEM",
-	"ALL_GEMS"
-}
-
-new cvar_skill_countdown, cvar_all_gems_time
-new cvar_power_knockback, cvar_power_radius, cvar_power_damage
-new cvar_soul_radius, cvar_soul_speed, cvar_soul_duration
-new cvar_time_duration, cvar_reality_duration, cvar_mind_duration
-
-
 // Tasks
-#define TASK_AMB 3256
 #define TASK_ENABLE_SKILL 12301902
 #define TASK_END_SKILL 210301
 #define TASK_SKILL_LOOP 123123
 #define TASK_ALL_GEMS 2131231
 #define TASK_BOT 1231252
 
-public plugin_init()
-{
+// Easy utilities
+#define GetUserThanos(%1) (zp_get_zombie_special_class(%1) == g_special_id) 
+#define IsThanosMode() (zp_get_current_mode() == g_gameid)
+
+/*-------------------------------------
+--> Plugin registeration.
+--------------------------------------*/
+public plugin_init() {
 	// Plugin registeration.
 	register_plugin("[ZPSp] Special Class: Thanos", "1.2", "[P]erfec[T] [S]cr[@]s[H]")
 	register_dictionary("zpsp_thanos.txt")
 
 	// Show servers are using this plugin
-	register_cvar("zpsp_class_thanos", "1.2", FCVAR_SERVER|FCVAR_SPONLY)
-	set_cvar_string("zpsp_class_thanos", "1.2")
+	register_cvar("zpsp_class_thanos", "1.3", FCVAR_SERVER|FCVAR_SPONLY)
+	set_cvar_string("zpsp_class_thanos", "1.3")
 	
 	// Gamemode cvars
 	cvar_minplayers = register_cvar("zp_minplayers_thanos", "2")
@@ -187,8 +208,6 @@ public plugin_init()
 	cvar_reality_duration = register_cvar("zp_thanos_reality_duration", "10")
 	cvar_mind_duration = register_cvar("zp_thanos_mind_duration", "10")
 
-	cvar_frost_dur = get_cvar_pointer("zp_frost_dur")
-
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
 	RegisterHam(Ham_Killed, "player", "fw_KilledPost", 1)
 
@@ -199,20 +218,17 @@ public plugin_init()
 	g_msgScreenFade = get_user_msgid("ScreenFade")
 	
 	g_msg_sync = CreateHudSyncObj()
-	g_maxplayers = get_maxplayers()
-
-	//register_clcmd("say /thanos", "set_next_thanos")
 }
 
-/*public set_next_thanos(id)
-{
-	if(get_user_flags(id) & ADMIN_ADMIN)
-		zp_set_next_game_mode(g_gameid)
-}*/
-
 // Game modes MUST be registered in plugin precache ONLY
-public plugin_precache()
-{
+public plugin_precache() {
+	g_gameid = zpsp_register_gamemode(sp_name, Start_Mode_Acess, g_chance, 0, ZP_DM_NONE, .uselang=1, .langkey="THANOS_CLASSNAME")
+	g_special_id = zp_register_zombie_special(sp_name, sp_model, sp_knifemodel, sp_painsound, sp_hp, sp_speed, sp_gravity, Make_Acess, sp_knockback, sp_aura_size, sp_allow_glow, sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2])
+	
+	// Set lang configuration
+	amx_save_setting_int(ZP_SPECIAL_CLASSES_FILE, fmt("Z:%s", sp_name), "NAME BY LANG", 1)
+	amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, fmt("Z:%s", sp_name), "LANG KEY", "THANOS_CLASSNAME")
+
 	g_exploSpr = precache_model(sprite_ring)
 	precache_sound("debris/beamstart7.wav")
 	BubbleSprite = precache_model("sprites/bm1.spr");
@@ -221,100 +237,51 @@ public plugin_precache()
 	Thunder = precache_model("sprites/lgtning.spr");
 	precache_sound(snap_sound)
 	precache_sound(use_stone)
-	//g_sprWhite = precache_model("sprites/white.spr");
+	
+	static i
+	// Register round start sound
+	for(i = 0; i < sizeof gamemode_round_start_snd; i++)
+		zp_register_start_gamemode_snd(g_gameid, gamemode_round_start_snd[i])
 
-	// Read the access flag
-	static user_access[40], i, buffer[250]
-	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "START MODE THANOS", user_access, charsmax(user_access))) {
-		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "START MODE THANOS", "a")
-		formatex(user_access, charsmax(user_access), "a")
-	}
-	acess_flags[0] = read_flags(user_access)
-	
-	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "MAKE THANOS", user_access, charsmax(user_access))) {
-		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "MAKE THANOS", "a")
-		formatex(user_access, charsmax(user_access), "a")
-	}
-	acess_flags[1] = read_flags(user_access)
-	
-	g_sound = ArrayCreate(64, 1)
-	g_sound_ambience = ArrayCreate(64, 1)
-	g_sound_amb_dur = ArrayCreate(64, 1)
-	
-	// Load from external file
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Sounds", "ROUND THANOS", g_sound)
-	
-	// Precache the play sounds
-	if (ArraySize(g_sound) == 0) {
-		for (i = 0; i < sizeof sound; i++)
-			ArrayPushString(g_sound, sound[i])
-		
-		// Save to external file
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Sounds", "ROUND THANOS", g_sound)
-	}
-	
-	// Precache sounds
-	for (i = 0; i < ArraySize(g_sound); i++) {
-		ArrayGetString(g_sound, i, buffer, charsmax(buffer))
-		precache_ambience(buffer)
-	}
-	
-	// Ambience Sounds
-	g_ambience_sounds = AMBIENCE_ENABLE
-	if(!amx_load_setting_int(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "THANOS ENABLE", g_ambience_sounds))
-		amx_save_setting_int(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "THANOS ENABLE", g_ambience_sounds)
-	
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "THANOS SOUNDS", g_sound_ambience)
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "THANOS DURATIONS", g_sound_amb_dur)
-	
-	
-	// Save to external file
-	if (ArraySize(g_sound_ambience) == 0) {
-		for (i = 0; i < sizeof ambience_sound; i++)
-			ArrayPushString(g_sound_ambience, ambience_sound[i])
-		
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "THANOS SOUNDS", g_sound_ambience)
-	}
-	
-	if (ArraySize(g_sound_amb_dur) == 0) {
-		for (i = 0; i < sizeof ambience_dur; i++)
-			ArrayPushString(g_sound_amb_dur, ambience_dur[i])
-		
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "THANOS DURATIONS", g_sound_amb_dur)
-	}
-	
-	// Ambience Sounds
-	if (g_ambience_sounds) {
-		for (i = 0; i < ArraySize(g_sound_ambience); i++) {
-			ArrayGetString(g_sound_ambience, i, buffer, charsmax(buffer))
-			precache_ambience(buffer)
-		}
-	}
-	
-	// Register Special Class and Game mod
-	#if ZPS_INC_VERSION < 44
-	g_gameid = zp_register_game_mode(sp_name, acess_flags[0], g_chance, 0, ZP_DM_NONE)
-	#else
-	g_gameid = zpsp_register_gamemode(sp_name, acess_flags[0], g_chance, 0, ZP_DM_NONE)
-	#endif
-	g_speciald = zp_register_zombie_special(sp_name, sp_model, sp_knifemodel, sp_painsound, sp_hp, sp_speed, sp_gravity, acess_flags[1], sp_knockback, sp_aura_size, sp_allow_glow, sp_color_r, sp_color_g, sp_color_b)
+	// Register ambience sounds
+	for (i = 0; i < sizeof gamemode_ambiences; i++)
+		zp_register_gamemode_ambience(g_gameid, gamemode_ambiences[i][AmbiencePrecache], gamemode_ambiences[i][AmbienceDuration], ambience_enable)
+
 }
 
+
+/*-------------------------------------
+--> Natives
+--------------------------------------*/
 public plugin_natives() {
-	// Register Natives
-	register_native("zp_get_user_thanos", "native_get_user_thanos", 1)
-	register_native("zp_make_user_thanos", "native_make_user_thanos", 1)
-	register_native("zp_get_count_thanos", "native_get_count_thanos", 1)
-	register_native("zp_is_round_thanos", "native_is_round_thanos", 1)
+	register_native("zp_get_user_thanos", "native_get_user_thanos")
+	register_native("zp_make_user_thanos", "native_make_user_thanos")
+	register_native("zp_get_thanos_count", "native_get_thanos_count")
+	register_native("zp_is_thanos_round", "native_is_thanos_round")
 }
+
+// Native: zp_get_user_thanos(id)
+public native_get_user_thanos(plugin_id, num_params) 
+	return GetUserThanos(get_param(1));
+
+// Native: zp_make_user_thanos(id)
+public native_make_user_thanos(plugin_id, num_params) 
+	return (zp_make_user_special(get_param(1), g_special_id, GET_ZOMBIE));
+
+// Native: zp_get_thanos_count()
+public native_get_thanos_count(plugin_id, num_params)
+	return zp_get_special_count(GET_ZOMBIE, g_special_id);
+
+// Native: zp_is_thanos_round()
+public native_is_thanos_round(plugin_id, num_params)
+	return IsThanosMode();
 
 // Attack Damage
-public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type)
-{
+public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type) {
 	if(!is_user_connected(victim) || !is_user_connected(attacker))
 		return HAM_IGNORED
 
-	if(zp_get_zombie_special_class(victim) == g_speciald && g_using_skill[victim] == REALITY) {
+	if(GetUserThanos(victim) && g_using_skill[victim] == REALITY) {
 		fm_strip_user_weapons(attacker)
 		fm_give_item(attacker, "weapon_knife")
 		//fm_give_item(attacker, "weapon_glock18")
@@ -340,10 +307,10 @@ public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type)
 		set_screenfadein(victim, 1, 0, 0, 0, 0)
 		zp_reset_user_rendering(victim)
 		set_task(get_pcvar_float(cvar_skill_countdown), "enable_skill", victim+TASK_ENABLE_SKILL)
-		client_printcolor(attacker, "%L %L", attacker, "THANOS_TAG", attacker, "REALITY_VICTIM")
+		client_print_color(attacker, print_team_default, "%L %L", attacker, "THANOS_TAG", attacker, "REALITY_VICTIM")
 	}	
 
-	if(inflictor == attacker && zp_get_zombie_special_class(attacker) == g_speciald)
+	if(inflictor == attacker && GetUserThanos(attacker))
 		SetHamParamFloat(4, get_pcvar_float(cvar_damage))
 		
 	return HAM_IGNORED
@@ -352,140 +319,83 @@ public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type)
 // Player spawn post
 public zp_player_spawn_post(id) {
 	// Check for current mode
-	if(zp_get_current_mode() == g_gameid)
+	if(IsThanosMode())
 		zp_disinfect_user(id)
 }
 
-public zp_round_started_pre(game)
-{
+public zp_round_started_pre(game) {
 	// Check if it is our game mode
-	if(game == g_gameid) {
-		// Check for min players
-		if(zp_get_alive_players() < get_pcvar_num(cvar_minplayers))
-			return ZP_PLUGIN_HANDLED
+	if(game != g_gameid)
+		return PLUGIN_CONTINUE
+	
+	// Check for min players
+	if(zp_get_alive_players() < get_pcvar_num(cvar_minplayers))
+		return ZP_PLUGIN_HANDLED
 
-		// Start our new mode
-		start_mode()
-	}
 	return PLUGIN_CONTINUE
 }
 
-public zp_round_started(game, id)
-{
-	// Check if it is our game mode
+public zp_round_started(game, id) {
 	if(game == g_gameid)
-	{
-		// Play the starting sound
-		static szSound[100]
-		ArrayGetString(g_sound, random_num(0, ArraySize(g_sound) - 1), szSound, charsmax(szSound))
-		#if ZPS_INC_VERSION < 44
-		PlaySoundToClients(szSound)
-		#else
-		zp_play_sound(0, szSound)
-		#endif
-		
-		// Remove ambience task affects
-		remove_task(TASK_AMB)
-		
-		// Set task to start ambience sounds
-		set_task(2.0, "start_ambience_sounds", TASK_AMB)
-
-		allow_use_all = false
-		remove_task(TASK_ALL_GEMS)
-		set_task(get_pcvar_float(cvar_all_gems_time), "allow_all_gems", TASK_ALL_GEMS)
-	}
+		start_mode()
 }
 
 public allow_all_gems() {
 	allow_use_all = true
-	for(new i = 1; i <= g_maxplayers; i++) {
+	static i;
+	for(i = 1; i <= MaxClients; i++) {
 		if(!is_user_alive(i))
 			continue;
 
-		if(zp_get_zombie_special_class(i) != g_speciald)
+		if(!GetUserThanos(i))
 			continue;
 
-		client_printcolor(i, "%L %L", i, "THANOS_TAG", i, "ALLOW_SNAP_FINGERS")
+		client_print_color(i, print_team_default, "%L %L", i, "THANOS_TAG", i, "ALLOW_SNAP_FINGERS")
 	}
-}
-
-public zp_game_mode_selected(gameid, id)
-{
-	// Check if our game mode was called
-	if(gameid == g_gameid)
-		start_mode()
-	
-	// Make the compiler happy again =)
-	return PLUGIN_CONTINUE
 }
 
 // This function contains the whole code behind this game mode
-start_mode()
-{
-	static id, i, has, name[32]; 
-	has = false
-	for (i = 1; i <= g_maxplayers; i++) {
-		if(is_user_alive(i))
-			continue;
+start_mode() {
+	allow_use_all = false
+	remove_task(TASK_ALL_GEMS)
+	set_task(get_pcvar_float(cvar_all_gems_time), "allow_all_gems", TASK_ALL_GEMS)
 
-		if(zp_get_zombie_special_class(i) == g_speciald) {
-			id = i						// Get Thanos Index
-			has = true
-		}
+	static id, i, has_thanos, name[32];
+	has_thanos = false
+	for (i = 1; i <= MaxClients; i++) {
+		if(!is_user_alive(i))
+			continue
+	
+		if(!GetUserThanos(i))
+			continue
+		
+		id = i	// Get Thanos Index
+		has_thanos = true
+		break;
 	}
-	if(!has) {
+
+	if(!has_thanos) {
 		id = zp_get_random_player()
-		zp_make_user_special(id, g_speciald, 1)
+		zp_make_user_special(id, g_special_id, GET_ZOMBIE)
 	}
 	
 	get_user_name(id, name, charsmax(name));
-	set_hudmessage(sp_color_r, sp_color_g, sp_color_b, -1.0, 0.17, 1, 0.0, 5.0, 1.0, 1.0, -1)
+	set_hudmessage(sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2], -1.0, 0.17, 1, 0.0, 5.0, 1.0, 1.0, -1)
 	ShowSyncHudMsg(0, g_msg_sync, "%L", LANG_PLAYER, "HUD_TURNED_THANOS", name)
-		
-	// Turn the remaining players into zombies
-	for (id = 1; id <= g_maxplayers; id++) {
-		// Not alive
-		if(!is_user_alive(id))
-			continue;
-			
-		set_screenfadein(id, 5, sp_color_r, sp_color_g, sp_color_b, 255)
-	}
+	set_screenfadein(0, 5, sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2], 255)
 }
 
-public start_ambience_sounds()
-{
-	if (!g_ambience_sounds)
-		return;
-	
-	// Variables
-	static amb_sound[64], sound,  str_dur[20]
-	
-	// Select our ambience sound
-	sound = random_num(0, ArraySize(g_sound_ambience)-1)
-
-	ArrayGetString(g_sound_ambience, sound, amb_sound, charsmax(amb_sound))
-	ArrayGetString(g_sound_amb_dur, sound, str_dur, charsmax(str_dur))
-	
-	#if ZPS_INC_VERSION < 44
-	PlaySoundToClients(amb_sound)
-	#else
-	zp_play_sound(0, amb_sound)
-	#endif
-	
-	// Start the ambience sounds
-	set_task(str_to_float(str_dur), "start_ambience_sounds", TASK_AMB)
-}
 public zp_round_ended() {
-	remove_task(TASK_AMB)
 	remove_task(TASK_ALL_GEMS)
 	is_sttoped = 0
 	allow_use_all = false
 
-	for(new i = 1; i <= g_maxplayers; i++) {
+	static i
+	for(i = 1; i <= MaxClients; i++) {
 		if(!is_user_alive(i))
 			continue
 
-		if(zp_get_zombie_special_class(i) != g_speciald)
+		if(!GetUserThanos(i))
 			continue
 
 		reset_thanos_vars(i)
@@ -509,123 +419,37 @@ public reset_thanos_vars(i) {
 
 public zp_user_infected_post(id) {
 	reset_thanos_vars(id)
-	if(zp_get_zombie_special_class(id) == g_speciald) 
-	{
-		if(!zp_has_round_started())
-			zp_set_custom_game_mod(g_gameid)	// Force Start Thanos Round
+	if(!GetUserThanos(id)) 
+		return;
+	
+	if(!zp_has_round_started())
+		zp_set_custom_game_mod(g_gameid)	// Force Start Thanos Round
 
-		if(is_user_bot(id))
-		{
-			remove_task(id+TASK_BOT)
-			set_task(random_float(5.0, 15.0), "bot_suport", id+TASK_BOT, _, _, "b")
-		}
-
-		client_printcolor(id, "%L %L", id, "THANOS_TAG", id, "YOU_ARE_THANOS")
-		client_printcolor(id, "%L %L", id, "THANOS_TAG", id, "THANOS_INFO")
+	if(is_user_bot(id)) {
+		remove_task(id+TASK_BOT)
+		set_task(random_float(5.0, 15.0), "bot_suport", id+TASK_BOT, _, _, "b")
 	}
+
+	client_print_color(id, print_team_default, "%L %L", id, "THANOS_TAG", id, "YOU_ARE_THANOS")
+	client_print_color(id, print_team_default, "%L %L", id, "THANOS_TAG", id, "THANOS_INFO")
 }
 
-public zp_user_humanized_post(id) reset_thanos_vars(id)
-public fw_KilledPost(id) reset_thanos_vars(id)
+public zp_user_humanized_post(id) reset_thanos_vars(id);
+public fw_KilledPost(id) reset_thanos_vars(id);
+public client_disconnected(id) reset_thanos_vars(id);
 
-#if AMXX_VERSION_NUM >= 183
-public client_disconnected(id) reset_thanos_vars(id)
-#else
-public client_disconnect(id) reset_thanos_vars(id)
-#endif
-
-stock client_printcolor(const id, const input[], any:...)
-{
-	new msg[191], players[32], count = 1; vformat(msg,190,input,3);
-	replace_all(msg,190,"!g","^4");    // green
-	replace_all(msg,190,"!y","^1");    // normal
-	replace_all(msg,190,"!t","^3");    // team
-	
-	if (id) players[0] = id; else get_players(players,count,"ch");
-	
-	for (new i=0;i<count;i++)
-	{
-		if (is_user_connected(players[i]))
-		{
-			message_begin(MSG_ONE_UNRELIABLE,get_user_msgid("SayText"),_,players[i]);
-			write_byte(players[i]);
-			write_string(msg);
-			message_end();
-		}
-	}
-} 
-
-public native_get_user_thanos(id)
-	return (zp_get_zombie_special_class(id) == g_speciald)
-	
-public native_make_user_thanos(id)
-	return (zp_make_user_special(id, g_speciald, GET_ZOMBIE))
-	
-public native_get_count_thanos()
-	return zp_get_special_count(GET_ZOMBIE, g_speciald)
-	
-public native_is_round_thanos()
-	return (zp_get_current_mode() == g_gameid)	
-
-precache_ambience(sound[])
-{
-	static buffer[150]
-	if(equal(sound[strlen(sound)-4], ".mp3")) {
-		if(!equal(sound, "sound/", 6) && !file_exists(sound) && !equal(sound, "media/", 6))
-			format(buffer, charsmax(buffer), "sound/%s", sound)
-		else
-			format(buffer, charsmax(buffer), "%s", sound)
-		
-		precache_generic(buffer)
-	}
-	else  {
-		if(equal(sound, "sound/", 6))
-			format(buffer, charsmax(buffer), "%s", sound[6])
-		else
-			format(buffer, charsmax(buffer), "%s", sound)
-		
-		
-		precache_sound(buffer)
-	}
-}
-
-#if ZPS_INC_VERSION < 44
-// Plays a sound on clients
-stock PlaySoundToClients(const sound[])
-{
-	static buffer[150]
-
-	if(equal(sound[strlen(sound)-4], ".mp3")) {
-		if(!equal(sound, "sound/", 6) && !file_exists(sound) && !equal(sound, "media/", 6))
-			format(buffer, charsmax(buffer), "sound/%s", sound)
-		else
-			format(buffer, charsmax(buffer), "%s", sound)
-	
-		client_cmd(0, "mp3 play ^"%s^"", buffer)
-
-	}
-	else {
-		if(equal(sound, "sound/", 6))
-			format(buffer, charsmax(buffer), "%s", sound[6])
-		else
-			format(buffer, charsmax(buffer), "%s", sound)
-			
-		client_cmd(0, "spk ^"%s^"", buffer)
-	}
-}
-#endif
-
-public fm_PlayerPreThink(id)
-{
+public fm_PlayerPreThink(id) {
 	if(!is_user_alive(id) || zp_has_round_ended())
 		return;
 
-	if(!zp_get_user_zombie(id) || zp_get_zombie_special_class(id) != g_speciald)
+	if(!zp_get_user_zombie(id) || !GetUserThanos(id))
 		return;
 
+	static buttons, oldbuttons;
+	buttons = fm_get_user_button(id);
+	oldbuttons = fm_get_user_oldbutton(id);
 
-	if((fm_get_user_button(id) & IN_RELOAD) && !(fm_get_user_oldbutton(id) & IN_RELOAD) && !task_exists(id))
-	{
+	if((buttons & IN_RELOAD) && !(oldbuttons & IN_RELOAD) && !task_exists(id)) {
 		if(g_current_infgem[id] >= TIME && !allow_use_all || g_current_infgem[id] >= ALL && allow_use_all)
 			g_current_infgem[id] = POWER
 		else
@@ -635,10 +459,9 @@ public fm_PlayerPreThink(id)
 		client_cmd(id, "spk common/wpn_moveselect.wav")
 	}
 
-	else if((fm_get_user_button(id) & IN_USE) && !(fm_get_user_oldbutton(id) & IN_USE))
-	{
+	else if((buttons & IN_USE) && !(oldbuttons & IN_USE)) {
 		if(g_used_skill[id]) {
-			client_printcolor(id, "%L %L", id, "THANOS_TAG", id, "INFINITY_GEM_WAIT")
+			client_print_color(id, print_team_default, "%L %L", id, "THANOS_TAG", id, "INFINITY_GEM_WAIT")
 			return;
 		}
 
@@ -657,8 +480,7 @@ public fm_PlayerPreThink(id)
 
 		//use_inf_gem(id, g_current_infgem[id])
 	}
-	else if(!(fm_get_user_button(id) & IN_USE) && (fm_get_user_oldbutton(id) & IN_USE) && !g_used_skill[id])
-	{
+	else if(!(buttons & IN_USE) && (oldbuttons & IN_USE) && !g_used_skill[id]) {
 		Set_Weapon_Anim(id, 3)
 		progress_bar(id, 0)
 		emit_sound(id, CHAN_WEAPON, use_stone, VOL_NORM, ATTN_NORM, SND_STOP, PITCH_NORM)
@@ -671,8 +493,7 @@ public set_skill(id) {
 	use_inf_gem(id, g_current_infgem[id])
 }
 
-public bot_suport(id)
-{ 
+public bot_suport(id) { 
 	id -= TASK_BOT
 
 	if(!is_user_alive(id) || zp_has_round_ended()) {
@@ -680,7 +501,7 @@ public bot_suport(id)
 		return;
 	}
 
-	if(!is_user_bot(id) || zp_get_zombie_special_class(id) != g_speciald) {
+	if(!is_user_bot(id) || !GetUserThanos(id)) {
 		remove_task(id+TASK_BOT)
 		return;
 	}
@@ -702,21 +523,19 @@ public bot_suport(id)
 	set_attack_block(id, 0.9)
 }
 
-public use_inf_gem(id, gem)
-{
+public use_inf_gem(id, gem) {
 	if(!is_user_alive(id) || zp_has_round_ended())
 		return;
 
-	if(!zp_get_user_zombie(id) || zp_get_zombie_special_class(id) != g_speciald || g_using_skill[id] != -1)
+	if(!GetUserThanos(id) || g_using_skill[id] != -1)
 		return;
 
 	if(g_used_skill[id]) {
-		client_printcolor(id, "%L %L", id, "THANOS_TAG", id, "INFINITY_GEM_WAIT")
+		client_print_color(id, print_team_default, "%L %L", id, "THANOS_TAG", id, "INFINITY_GEM_WAIT")
 		return;
 	}
 
-	static Float:def_cvar, name[32]; 
-	def_cvar = get_pcvar_float(cvar_frost_dur)
+	static name[32], i; 
 	get_user_name(id, name, charsmax(name))
 
 	// Anti-Bug
@@ -725,8 +544,7 @@ public use_inf_gem(id, gem)
 		g_current_infgem[id] = POWER
 	}
 
-	switch(gem)
-	{
+	switch(gem) {
 		case POWER: {
 			static Float:OriginF[3]
 			pev(id, pev_origin, OriginF)
@@ -736,7 +554,7 @@ public use_inf_gem(id, gem)
 
 			// Custom explosion effect
 			create_blast(OriginF, get_pcvar_num(cvar_power_radius), 255, 0, 255)
-			for(new i = 1; i <= g_maxplayers; i++) {
+			for(i = 1; i <= MaxClients; i++) {
 				if(!is_user_alive(i) || i == id)
 					continue
 
@@ -744,11 +562,7 @@ public use_inf_gem(id, gem)
 					continue;
 
 				thunder_effect(i)
-				#if ZPS_INC_VERSION < 44
-				zp_set_extra_damage(i, id, get_pcvar_num(cvar_power_damage), "Thanos: Power Gem")
-				#else
 				zp_set_user_extra_damage(i, id, get_pcvar_num(cvar_power_damage), "Thanos: Power Gem")
-				#endif
 
 				if(get_pcvar_num(cvar_power_knockback))
 					set_knockback(id, i, get_pcvar_num(cvar_power_knockback))
@@ -763,7 +577,7 @@ public use_inf_gem(id, gem)
 			get_user_origin(id, NewLocation, 3);
 			
 			// Create bubbles in a place where player teleported			
-			new BubbleOrigin[3], Float:Orig[3];
+			static BubbleOrigin[3], Float:Orig[3];
 			BubbleOrigin[0] = UserOrigin[0];
 			BubbleOrigin[1] = UserOrigin[1];
 			BubbleOrigin[2] = UserOrigin[2] + 40;
@@ -823,10 +637,7 @@ public use_inf_gem(id, gem)
 			return;
 		}
 		case SOUL: {
-			set_pcvar_float(cvar_frost_dur, 999999.0)
-
-			zp_set_user_frozen(id, 2)
-			//zp_set_user_maxspeed(id, 1.0)
+			zp_set_user_frozen(id, SET_WITHOUT_IMMUNIT, 0.0) // 0.0 = Permanent
 			zp_set_user_rendering(id, kRenderFxGlowShell, 255, 69, 0, kRenderNormal, 255)
 			
 			message_begin(MSG_ONE, g_msgScreenFade, _, id)
@@ -848,8 +659,7 @@ public use_inf_gem(id, gem)
 			set_task(1.0, "Soul_Gem_Effect", id+TASK_SKILL_LOOP, _, _, "b")
 			set_task(get_pcvar_float(cvar_soul_duration), "end_soul_skill", id+TASK_END_SKILL)
 			Set_Weapon_Anim(id, 9)
-			client_printcolor(0, "%L %L", LANG_PLAYER, "THANOS_TAG", LANG_PLAYER, "SOUL_GEM_SKILL", name)
-			set_pcvar_float(cvar_frost_dur, def_cvar)
+			client_print_color(0, print_team_default, "%L %L", LANG_PLAYER, "THANOS_TAG", LANG_PLAYER, "SOUL_GEM_SKILL", name)
 			return;
 		}
 		case MIND: {
@@ -866,7 +676,7 @@ public use_inf_gem(id, gem)
 
 		case TIME: {
 			if(is_sttoped) {
-				client_printcolor(id, "%L %L", id, "THANOS_TAG", id, "TIME_ALTERADY_STOPPED")
+				client_print_color(id, print_team_default, "%L %L", id, "THANOS_TAG", id, "TIME_ALTERADY_STOPPED")
 				return;
 			}
 
@@ -874,23 +684,20 @@ public use_inf_gem(id, gem)
 			g_used_skill[id] = true
 			is_sttoped = id
 			
-			for(new i = 1; i <= g_maxplayers; i++)
-			{
+			for(i = 1; i <= MaxClients; i++) {
 				if(!is_user_alive(i) || i == id)
 					continue;
 
-				if(zp_get_zombie_special_class(i) == g_speciald)
+				if(GetUserThanos(i))
 					continue;
 				
-				set_pcvar_float(cvar_frost_dur, 99999.0)
-				zp_set_user_frozen(i, 2)
-				set_pcvar_float(cvar_frost_dur, def_cvar)
+				zp_set_user_frozen(i, SET_WITHOUT_IMMUNIT, 0.0)
 				zp_set_user_rendering(i, kRenderFxGlowShell, 0, 0, 0, kRenderNormal, 255)
 
 				set_attack_block(i, get_pcvar_float(cvar_time_duration))
 			}
 			
-			client_printcolor(0, "%L %L", LANG_PLAYER, "THANOS_TAG", LANG_PLAYER, "STOPPED_TIME", name)
+			client_print_color(0, print_team_default, "%L %L", LANG_PLAYER, "THANOS_TAG", LANG_PLAYER, "STOPPED_TIME", name)
 			set_screenfadein(0, get_pcvar_num(cvar_time_duration), 0, 255, 0, 100)
 			remove_task(id+TASK_END_SKILL)
 			set_task(get_pcvar_float(cvar_time_duration), "end_time_gem_skill", id+TASK_END_SKILL)
@@ -919,7 +726,7 @@ public snap_fingers(id) {
 	if(!is_user_alive(id) || zp_has_round_ended())
 		return;
 
-	if(!zp_get_user_zombie(id) || zp_get_zombie_special_class(id) != g_speciald)
+	if(!zp_get_user_zombie(id) || !GetUserThanos(id))
 		return;
 
 	static name[32]; 
@@ -927,7 +734,7 @@ public snap_fingers(id) {
 
 	set_screenfadein(0, 3, 255, 255, 255, 255)
 	set_task(3.0, "kill_half_humans", id+TASK_END_SKILL)
-	client_printcolor(0, "%L %L", LANG_PLAYER, "THANOS_TAG", LANG_PLAYER, "SNAP_FINGERS", name)
+	client_print_color(0, print_team_default, "%L %L", LANG_PLAYER, "THANOS_TAG", LANG_PLAYER, "SNAP_FINGERS", name)
 }
 
 public check_stuck(id) {
@@ -938,7 +745,7 @@ public check_stuck(id) {
 
 	if(zp_is_user_stuck(id)) {
 		zp_do_random_spawn(id)
-		client_printcolor(id, "%L %L", id, "THANOS_TAG", id, "THANOS_AUTO_UNSTUCK")
+		client_print_color(id, print_team_default, "%L %L", id, "THANOS_TAG", id, "THANOS_AUTO_UNSTUCK")
 	}
 }
 
@@ -953,8 +760,8 @@ public Soul_Gem_Absorb(id) {
 	pev(id, pev_origin, UserOrigin)
 	//set_pev(id, pev_velocity, Float:{0.0,0.0,0.0})
 
-	for(new i = 1; i <= g_maxplayers; i++)
-	{
+	static i;
+	for(i = 1; i <= MaxClients; i++) {
 		if(!is_user_alive(i))
 			continue
 
@@ -967,7 +774,7 @@ public Soul_Gem_Absorb(id) {
 		
 		if(get_distance_f(Origin, UserOrigin) <= 150.0 && !zp_get_user_zombie(i)) {
 			ExecuteHamB(Ham_Killed, i, id, 0)
-			client_printcolor(i, "%L %L", i, "THANOS_TAG", i, "ABSORBEB_BY_SOUL_GEM")
+			client_print_color(i, print_team_default, "%L %L", i, "THANOS_TAG", i, "ABSORBEB_BY_SOUL_GEM")
 			continue
 		}
 		
@@ -1001,14 +808,13 @@ public end_soul_skill(id) {
 		//zp_reset_user_maxspeed(id)
 	}
 }
-public end_skill(id)
-{
+public end_skill(id) {
 	id -= TASK_END_SKILL
 
 	if(!is_user_alive(id))
 		return
 
-	if(zp_get_zombie_special_class(id) != g_speciald)
+	if(!GetUserThanos(id))
 		return;
 
 	remove_task(id+TASK_ENABLE_SKILL)
@@ -1021,8 +827,9 @@ public end_skill(id)
 }
 public end_time_gem_skill(id) {
 	id -= TASK_END_SKILL
-	for(new i = 1; i <= g_maxplayers; i++)
-	{
+
+	static i;
+	for(i = 1; i <= MaxClients; i++) {
 		if(!is_user_alive(i))
 			continue;
 
@@ -1035,7 +842,7 @@ public end_time_gem_skill(id) {
 	g_using_skill[id] = -1
 	remove_task(id+TASK_ENABLE_SKILL)
 	set_task(get_pcvar_float(cvar_skill_countdown), "enable_skill", id+TASK_ENABLE_SKILL)
-	client_printcolor(0, "%L %L", LANG_PLAYER, "THANOS_TAG", LANG_PLAYER, "TIME_RETURN_WORKS")
+	client_print_color(0, print_team_default, "%L %L", LANG_PLAYER, "THANOS_TAG", LANG_PLAYER, "TIME_RETURN_WORKS")
 	Set_Weapon_Anim(id, 0)
 }
 public enable_skill(id) {
@@ -1044,90 +851,48 @@ public enable_skill(id) {
 	if(!is_user_alive(id))
 		return;
 
-	if(!zp_get_user_zombie(id) || zp_get_zombie_special_class(id) != g_speciald)
+	if(!zp_get_user_zombie(id) || !GetUserThanos(id))
 		return;
 
 	g_used_skill[id] = false
-	client_printcolor(id, "%L %L", id, "THANOS_TAG", id, "ALLOW_USE_GEM")
+	client_print_color(id, print_team_default, "%L %L", id, "THANOS_TAG", id, "ALLOW_USE_GEM")
 }
 
-create_blast(const Float:originF[3], radius, r, g, b)
-{
-	new radius_shockwave, size
+create_blast(const Float:originF[3], radius, r, g, b) {
+	static radius_shockwave, size, i
+	size = 0
 	radius_shockwave = radius
 	while(radius_shockwave >= 60) {
 		radius_shockwave -= 60
 		size++
 	}
 	
-	engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, originF, 0)
-	write_byte(TE_BEAMCYLINDER) // TE id
-	engfunc(EngFunc_WriteCoord, originF[0]) // x
-	engfunc(EngFunc_WriteCoord, originF[1]) // y
-	engfunc(EngFunc_WriteCoord, originF[2]) // z
-	engfunc(EngFunc_WriteCoord, originF[0]) // x axis
-	engfunc(EngFunc_WriteCoord, originF[1]) // y axis
-	engfunc(EngFunc_WriteCoord, originF[2]+385.0) // z axis
-	write_short(g_exploSpr) // sprite
-	write_byte(0) // startframe
-	write_byte(0) // framerate
-	write_byte(size) // life
-	write_byte(60) // width
-	write_byte(0) // noise
-	write_byte(r) // red
-	write_byte(g) // green
-	write_byte(b) // blue
-	write_byte(200) // brightness
-	write_byte(0) // speed
-	message_end()
+	for(i = 0; i < 3; i++) {
+		engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, originF, 0)
+		write_byte(TE_BEAMCYLINDER) // TE id
+		engfunc(EngFunc_WriteCoord, originF[0]) // x
+		engfunc(EngFunc_WriteCoord, originF[1]) // y
+		engfunc(EngFunc_WriteCoord, originF[2]) // z
+		engfunc(EngFunc_WriteCoord, originF[0]) // x axis
+		engfunc(EngFunc_WriteCoord, originF[1]) // y axis
+		engfunc(EngFunc_WriteCoord, originF[2]+385.0 + (i * 75.0)) // z axis
+		write_short(g_exploSpr) // sprite
+		write_byte(0) // startframe
+		write_byte(0) // framerate
+		write_byte(size) // life
+		write_byte(60) // width
+		write_byte(0) // noise
+		write_byte(r) // red
+		write_byte(g) // green
+		write_byte(b) // blue
+		write_byte(200) // brightness
+		write_byte(0) // speed
+		message_end()
+	}
 	
-	// Medium ring
-	engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, originF, 0)
-	write_byte(TE_BEAMCYLINDER) // TE id
-	engfunc(EngFunc_WriteCoord, originF[0]) // x
-	engfunc(EngFunc_WriteCoord, originF[1]) // y
-	engfunc(EngFunc_WriteCoord, originF[2]) // z
-	engfunc(EngFunc_WriteCoord, originF[0]) // x axis
-	engfunc(EngFunc_WriteCoord, originF[1]) // y axis
-	engfunc(EngFunc_WriteCoord, originF[2]+470.0) // z axis
-	write_short(g_exploSpr) // sprite
-	write_byte(0) // startframe
-	write_byte(0) // framerate
-	write_byte(size) // life
-	write_byte(60) // width
-	write_byte(0) // noise
-	write_byte(r) // red
-	write_byte(g) // green
-	write_byte(b) // blue
-	write_byte(200) // brightness
-	write_byte(0) // speed
-	message_end()
-	
-	// Largest ring
-	engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, originF, 0)
-	write_byte(TE_BEAMCYLINDER) // TE id
-	engfunc(EngFunc_WriteCoord, originF[0]) // x
-	engfunc(EngFunc_WriteCoord, originF[1]) // y
-	engfunc(EngFunc_WriteCoord, originF[2]) // z
-	engfunc(EngFunc_WriteCoord, originF[0]) // x axis
-	engfunc(EngFunc_WriteCoord, originF[1]) // y axis
-	engfunc(EngFunc_WriteCoord, originF[2]+555.0) // z axis
-	write_short(g_exploSpr) // sprite
-	write_byte(0) // startframe
-	write_byte(0) // framerate
-	write_byte(size) // life
-	write_byte(60) // width
-	write_byte(0) // noise
-	write_byte(r) // red
-	write_byte(g) // green
-	write_byte(b) // blue
-	write_byte(200) // brightness
-	write_byte(0) // speed
-	message_end()
 }
 
-set_knockback(id, victim, power)
-{
+set_knockback(id, victim, power) {
 	static Float:vec[3], Float:oldvelo[3];
 	get_user_velocity(victim, oldvelo);
 	create_velocity_vector(victim , id , vec, power);
@@ -1136,10 +901,8 @@ set_knockback(id, victim, power)
 	set_user_velocity(victim , vec);
 }
 // Knockback 
-stock create_velocity_vector(victim,attacker,Float:velocity[3], power)
-{
-	if(victim > 0 && victim < 33)
-	{
+stock create_velocity_vector(victim,attacker,Float:velocity[3], power) {
+	if(victim > 0 && victim < 33) {
 		if(!is_user_alive(attacker))
 		return 0;
 		
@@ -1176,8 +939,7 @@ set_attack_block(id, Float:time) {
 	if(pev_valid(id) == 2)
 		set_pdata_float(id, OFFSET_NEXTATTACK, time, OFFSET_LINUX)
 }
-public fw_Item_Deploy_Post(weapon_ent)
-{
+public fw_Item_Deploy_Post(weapon_ent) {
 	if(!pev_valid(weapon_ent))
 		return
 	
@@ -1186,12 +948,12 @@ public fw_Item_Deploy_Post(weapon_ent)
 	owner = fm_cs_get_weapon_ent_owner(weapon_ent)
 	
 	// Invalid player id? (bugfix)
-	if (!(1 <= owner <= g_maxplayers)) return;	
+	if (!(1 <= owner <= MaxClients)) return;	
 
 	if(!is_user_alive(owner))
 		return;
 
-	if(is_sttoped && zp_get_zombie_special_class(owner) != g_speciald)
+	if(is_sttoped && zp_get_zombie_special_class(owner) != g_special_id)
 		set_attack_block(owner, 10.0)
 }	
 
@@ -1203,8 +965,7 @@ stock fm_cs_get_weapon_ent_owner(ent) {
 	return get_pdata_cbase(ent, OFFSET_WEAPONOWNER, OFFSET_LINUX_WEAPONS);
 }
 
-stock hook_ent2(ent, Float:VicOrigin[3], Float:speed)
-{
+stock hook_ent2(ent, Float:VicOrigin[3], Float:speed) {
 	if(!pev_valid(ent))
 		return
 	
@@ -1223,32 +984,27 @@ stock hook_ent2(ent, Float:VicOrigin[3], Float:speed)
 }
 
 stock set_screenfadein(id, fadetime, r, g, b, alpha) {
-	new players[32], count = 1
-	if(id) players[0] = id; else get_players(players,count,"ch");
-    
-	for (new i=0;i<count;i++) {
-		if(is_user_connected(players[i])) {
-			message_begin(MSG_ONE, g_msgScreenFade, _, players[i])
-			write_short(UNIT_SECOND*fadetime) // duration
-			write_short(0) // hold time
-			write_short(FFADE_IN) // fade type
-			write_byte(r) // red
-			write_byte(g) // green
-			write_byte(b) // blue
-			write_byte(alpha) // alpha
-			message_end()
-		}
-	}
+	if(!is_user_connected(id) && id)
+		return;
+
+	message_begin(id ? MSG_ONE_UNRELIABLE : MSG_BROADCAST, g_msgScreenFade, _, id);
+	write_short(UNIT_SECOND*fadetime) // duration
+	write_short(0) // hold time
+	write_short(FFADE_IN) // fade type
+	write_byte(r) // red
+	write_byte(g) // green
+	write_byte(b) // blue
+	write_byte(alpha) // alpha
+	message_end()
 }
 
-public Mind_Gem_Skill(id)
-{
+public Mind_Gem_Skill(id) {
 	id -= TASK_SKILL_LOOP
 
 	if(!is_user_alive(id))
 		return;
 
-	if(!zp_get_user_zombie(id) || zp_get_zombie_special_class(id) != g_speciald)
+	if(!zp_get_user_zombie(id) || !GetUserThanos(id))
 		return;
 		
 	static Float:vEnd[3], Float:vOrigin[3]
@@ -1269,12 +1025,7 @@ public Mind_Gem_Skill(id)
 	// Do caso de um idiota passar no meio da linha
 	if(fFraction < 1.0 && is_user_alive(iHit)) {
 		get_tr2(Trace_Result, TR_vecEndPos, vEnd)
-
-		#if ZPS_INC_VERSION < 44
-		if(!zp_get_user_zombie(iHit)) zp_set_extra_damage(iHit, id, random_num(30, 100), "Thanos: Mind Gem")
-		#else
 		if(!zp_get_user_zombie(iHit)) zp_set_user_extra_damage(iHit, id, random_num(30, 100), "Thanos: Mind Gem", 1)
-		#endif
 	}
 
 	message_begin(MSG_BROADCAST,SVC_TEMPENTITY);
@@ -1300,8 +1051,7 @@ public Mind_Gem_Skill(id)
 
 
 }
-stock Set_Weapon_Anim(id, WeaponAnim)
-{
+stock Set_Weapon_Anim(id, WeaponAnim) {
 	if(!is_user_alive(id))
 		return
 
@@ -1320,8 +1070,7 @@ public progress_bar(id, duration) {
 	write_short(duration)
 	message_end()
 }
-stock Stock_Get_Postion(id,Float:forw,Float:right, Float:up,Float:vStart[])
-{
+stock Stock_Get_Postion(id,Float:forw,Float:right, Float:up,Float:vStart[]) {
 	static Float:vOrigin[3], Float:vAngle[3], Float:vForward[3], Float:vRight[3], Float:vUp[3]
 	
 	pev(id, pev_origin, vOrigin)
@@ -1337,8 +1086,7 @@ stock Stock_Get_Postion(id,Float:forw,Float:right, Float:up,Float:vStart[])
 	vStart[1] = vOrigin[1] + vForward[1] * forw + vRight[1] * right + vUp[1] * up
 	vStart[2] = vOrigin[2] + vForward[2] * forw + vRight[2] * right + vUp[2] * up
 } 
-stock get_weapon_attachment(id, Float:output[3], Float:fDis = 40.0)
-{ 
+stock get_weapon_attachment(id, Float:output[3], Float:fDis = 40.0) { 
 	static Float:vfEnd[3], viEnd[3] 
 	get_user_origin(id, viEnd, 3)  
 	IVecFVec(viEnd, vfEnd) 
@@ -1368,7 +1116,7 @@ public kill_half_humans(id) {
 	if(!is_user_alive(id) || zp_has_round_ended())
 		return;
 
-	if(zp_get_zombie_special_class(id) != g_speciald)
+	if(!GetUserThanos(id))
 		return;
 
 	static kill_count, max_kills, i
@@ -1379,10 +1127,9 @@ public kill_half_humans(id) {
 	if(zp_get_human_count() > 1) {
 		max_kills = zp_get_human_count() / 2
 
-		while (kill_count < max_kills)
-		{
+		while (kill_count < max_kills) {
 			// Keep looping through all players
-			if ((++i) > g_maxplayers) i = 1
+			if ((++i) > MaxClients) i = 1
 			
 			// Dead
 			if (!is_user_alive(i))
@@ -1395,7 +1142,7 @@ public kill_half_humans(id) {
 			if (random_num(1, 5) == 1) {
 				beam_effect(i)
 				ExecuteHamB(Ham_Killed, i, id, 0)
-				client_printcolor(i, "%L %L", i, "THANOS_TAG", i, "SNAP_CHOOSED")
+				client_print_color(i, print_team_default, "%L %L", i, "THANOS_TAG", i, "SNAP_CHOOSED")
 				
 				// Increase counter
 				kill_count++
@@ -1403,14 +1150,14 @@ public kill_half_humans(id) {
 		}
 	}
 	else  {
-		for(i = 1; i <= g_maxplayers; i++) {
+		for(i = 1; i <= MaxClients; i++) {
 			if(!is_user_alive(i))
 				continue;
 
 			if(!zp_get_user_zombie(i)) {
 				beam_effect(i)
 				ExecuteHamB(Ham_Killed, i, id, 0)
-				client_printcolor(i, "%L %L", i, "THANOS_TAG", i, "SNAP_CHOOSED")
+				client_print_color(i, print_team_default, "%L %L", i, "THANOS_TAG", i, "SNAP_CHOOSED")
 			}
 		}
 	}
@@ -1478,42 +1225,24 @@ stock beam_effect(id) {
 	if(!is_user_alive(id))
 		return;
 
-	static Float:fl_Origin[3], iOrigin[3]
+	static Float:fl_Origin[3], iOrigin[3], i, j
 	pev(id, pev_origin, fl_Origin)
 	set_entity_visibility(id, 0)
 
 	FVecIVec(fl_Origin, iOrigin)
 
 	// Particle effect
-	for(new i = 0; i <= 3; i++) {
-		message_begin(MSG_PVS, SVC_TEMPENTITY, iOrigin);
-		write_byte(TE_IMPLOSION);
-		write_coord(iOrigin[0]);
-		write_coord(iOrigin[1]);
-		write_coord(iOrigin[2]+20);
-		write_byte(200)	// radius
-		write_byte(40)		// count
-		write_byte(45)		// life in 0.1's
-		message_end()
-
-		message_begin(MSG_PVS, SVC_TEMPENTITY, iOrigin);
-		write_byte(TE_IMPLOSION);
-		write_coord(iOrigin[0]);
-		write_coord(iOrigin[1]);
-		write_coord(iOrigin[2]+10);
-		write_byte(200)	// radius
-		write_byte(40)		// count
-		write_byte(45)		// life in 0.1's
-		message_end()
-
-		message_begin(MSG_PVS, SVC_TEMPENTITY, iOrigin);
-		write_byte(TE_IMPLOSION);
-		write_coord(iOrigin[0]);
-		write_coord(iOrigin[1]);
-		write_coord(iOrigin[2]-5);
-		write_byte(200)	// radius
-		write_byte(40)		// count
-		write_byte(45)		// life in 0.1's
-		message_end()
+	for(i = 0; i <= 3; i++) {
+		for(j = 1; j < 4; j++) {
+			message_begin(MSG_PVS, SVC_TEMPENTITY, iOrigin);
+			write_byte(TE_IMPLOSION);
+			write_coord(iOrigin[0]);
+			write_coord(iOrigin[1]);
+			write_coord(iOrigin[2]+25 - (j * 5));
+			write_byte(200)	// radius
+			write_byte(40)		// count
+			write_byte(45)		// life in 0.1's
+			message_end()
+		}
 	}
 }

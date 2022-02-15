@@ -1,39 +1,59 @@
 [en]
-YOURE_SHADOW = You're a !t[Shadow the Hedgehog] !g||!y Third Person View MANDATORY
-SHADOW_INFO = Press !t[E]!y for use a !tBOOST !g||!y Press !t[R]!y for use a !tSpin Dash !g||!y Use double jump for a !tHomming Attack
-YOURE_SONIC = You're a !t[Sonic the Hedgehog] !g||!y Third Person View MANDATORY
-SONIC_INFO = Press !t[E]!y for use a !tBOOST !g||!y Press !t[R]!y for use a !tSpin Dash !g||!y Use double jump for a !tHomming Attack
+SONIC_CHAT_PREFIX = ^4[ZPSp Sonic]^1
+SHADOW_CHAT_PREFIX = ^4[ZPSp Shadow]^1
+SONIC_CLASSNAME = Sonic the Hedgehog
+SHADOW_CLASSNAME = Shadow the Hedgehog
+YOURE_SHADOW = You're a ^3[Shadow the Hedgehog] ^4||^1 Third Person View MANDATORY
+SHADOW_INFO = Press ^3[E]^1 for use a ^3BOOST ^4||^1 Press ^3[R]^1 for use a ^3Spin Dash ^4||^1 Use double jump for a ^3Homming Attack
+YOURE_SONIC = You're a ^3[Sonic the Hedgehog] ^4||^1 Third Person View MANDATORY
+SONIC_INFO = Press ^3[E]^1 for use a ^3BOOST ^4||^1 Press ^3[R]^1 for use a ^3Spin Dash ^4||^1 Use double jump for a ^3Homming Attack
 BOOST_GAUGE = ---------[BOOST]--------
 START_SHADOW = %s is a Shadow
 START_SONIC = %s is a Sonic
 START_SVS = Shadow vs Sonic Mode !!!
+GM_SVS_NAME = Shadow vs Sonic
 
 [es]
-YOURE_SHADOW = Tu eres el !t[Shadow el Erizo] !g||!y Vista en tercera persona OBLIGATORIA
-SHADOW_INFO = Pressione !t[E]!y para usar el !tBOOST !g||!y Pressione !t[R]!y para usar el !tSpin Dash !g||!y Salta dos veces para usar el !tHomming Attack
-YOURE_SONIC = Tu eres el !t[Sonic el Erizo] !g||!y Vista en tercera persona OBLIGATORIA
-SONIC_INFO = Pressione !t[E]!y para usar el !tBOOST !g||!y Pressione !t[R]!y para usar el !tSpin Dash !g||!y Salta dos veces para usar el !tHomming Attack
+SONIC_CHAT_PREFIX = ^4[ZPSp Sonic]^1
+SHADOW_CHAT_PREFIX = ^4[ZPSp Shadow]^1
+SONIC_CLASSNAME = Sonic el Erizo
+SHADOW_CLASSNAME = Shadow el Erizo
+YOURE_SHADOW = Tu eres el ^3[Shadow el Erizo] ^4||^1 Vista en tercera persona OBLIGATORIA
+SHADOW_INFO = Pressione ^3[E]^1 para usar el ^3BOOST ^4||^1 Pressione ^3[R]^1 para usar el ^3Spin Dash ^4||^1 Salta dos veces para usar el ^3Homming Attack
+YOURE_SONIC = Tu eres el ^3[Sonic el Erizo] ^4||^1 Vista en tercera persona OBLIGATORIA
+SONIC_INFO = Pressione ^3[E]^1 para usar el ^3BOOST ^4||^1 Pressione ^3[R]^1 para usar el ^3Spin Dash ^4||^1 Salta dos veces para usar el ^3Homming Attack
 BOOST_GAUGE = ---------[BOOST]--------
 START_SHADOW = ¡%s eres el Shadow!
 START_SONIC = ¡%s eres el Sonic!
 START_SVS = ¡Shadow vs Sonic!
+GM_SVS_NAME = Shadow vs Sonic
 
 [bp]
-YOURE_SHADOW = Voce eh o !t[Shadow the Hedgehog] !g||!y Visao de terceira pessoa OBRIGATORIA
-SHADOW_INFO = Pressione !t[E]!y Para usar o !tBOOST !g||!y Pressione !t[R]!y Para usar o !tSpin Dash !g||!y Pule duas vezes para usar o !tHomming Attack
-YOURE_SONIC = Voce eh o !t[Sonic the Hedgehog] !g||!y Visao de terceira pessoa OBRIGATORIA
-SONIC_INFO = Pressione !t[E]!y Para usar o !tBOOST !g||!y Pressione !t[R]!y Para usar o !tSpin Dash !g||!y Pule duas vezes para usar o !tHomming Attack
+SONIC_CHAT_PREFIX = ^4[ZPSp Sonic]^1
+SHADOW_CHAT_PREFIX = ^4[ZPSp Shadow]^1
+SONIC_CLASSNAME = Sonic the Hedgehog
+SHADOW_CLASSNAME = Shadow the Hedgehog
+YOURE_SHADOW = Voce eh o ^3[Shadow the Hedgehog] ^4||^1 Visao de terceira pessoa OBRIGATORIA
+SHADOW_INFO = Pressione ^3[E]^1 Para usar o ^3BOOST ^4||^1 Pressione ^3[R]^1 Para usar o ^3Spin Dash ^4||^1 Pule duas vezes para usar o ^3Homming Attack
+YOURE_SONIC = Voce eh o ^3[Sonic the Hedgehog] ^4||^1 Visao de terceira pessoa OBRIGATORIA
+SONIC_INFO = Pressione ^3[E]^1 Para usar o ^3BOOST ^4||^1 Pressione ^3[R]^1 Para usar o ^3Spin Dash ^4||^1 Pule duas vezes para usar o ^3Homming Attack
 BOOST_GAUGE = ---------[BOOST]--------
 START_SHADOW = %s eh o Shadow
 START_SONIC = %s eh o Sonic
 START_SVS = Modo Shadow vs Sonic !!!
+GM_SVS_NAME = Shadow vs Sonic
 
 [pt]
-YOURE_SHADOW = Voce eh o !t[Sombra o Ourico] !g||!y Visao de terceira pessoa OBRIGATORIA.
-SHADOW_INFO = Pressione !t[E]!y Para usar a !tVELOCIDADE !g||!y Pressione !t[R]!y Para usar o !tGiro de Traco !g||!y Pule duas vezes para usar o !tAtaque teleguiado
-YOURE_SONIC = Voce eh o !t[Sonico o Ourico] !g||!y Visao de terceira pessoa OBRIGATORIA.
-SONIC_INFO = Pressione !t[E]!y Para usar a !tVELOCIDADE !g||!y Pressione !t[R]!y Para usar o !tGiro de Traco !g||!y Pule duas vezes para usar o !tAtaque teleguiado
+SONIC_CHAT_PREFIX = ^4[ZPSp Sonico]^1
+SHADOW_CHAT_PREFIX = ^4[ZPSp Sombra]^1
+SONIC_CLASSNAME = Sonico o Ourico
+SHADOW_CLASSNAME = Sombra o Ourico
+YOURE_SHADOW = Voce eh o ^3[Sombra o Ourico] ^4||^1 Visao de terceira pessoa OBRIGATORIA.
+SHADOW_INFO = Pressione ^3[E]^1 Para usar a ^3VELOCIDADE ^4||^1 Pressione ^3[R]^1 Para usar o ^3Giro de Traco ^4||^1 Pule duas vezes para usar o ^3Ataque teleguiado
+YOURE_SONIC = Voce eh o ^3[Sonico o Ourico] ^4||^1 Visao de terceira pessoa OBRIGATORIA.
+SONIC_INFO = Pressione ^3[E]^1 Para usar a ^3VELOCIDADE ^4||^1 Pressione ^3[R]^1 Para usar o ^3Giro de Traco ^4||^1 Pule duas vezes para usar o ^3Ataque teleguiado
 BOOST_GAUGE = ------[VELOCIDADE]------
 START_SHADOW = %s e o Sombra
 START_SONIC = %s e o Sonico
 START_SVS = Modo Sombra vs Sonico !!!
+GM_SVS_NAME = Sombra vs Sonico

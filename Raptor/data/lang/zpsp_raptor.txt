@@ -1,0 +1,31 @@
+[en]
+RAPTOR_CLASSNAME = Raptor
+CLASS_RAPTOR_PREFIX = ^4[ZPSp Raptor]^3
+CLASS_RAPTOR_INFO = You are a Raptor ^1||^3 Press ^4[E]^3 To Use Sprint ^1(When available)
+CLASS_RAPTOR_SKILL_READY = Your skill is ready.
+ARE_RAPTOR = %s is an Raptor
+SKILL_RAPTOR_COOLDOWN = Sprint Cooldown: %d
+
+[bp]
+RAPTOR_CLASSNAME = Raptor
+CLASS_RAPTOR_PREFIX = ^4[ZPSp Raptor]^3
+CLASS_RAPTOR_INFO = Voce eh o Raptor ^1||^3 Aperte ^4[E]^3 para usar a Velocidade ^1(Quando disponivel)
+CLASS_RAPTOR_SKILL_READY = Sua Velocidade esta pronta
+ARE_RAPTOR = %s eh o Raptor
+SKILL_RAPTOR_COOLDOWN = Habilidade disponivel em: %d
+
+[pt]
+RAPTOR_CLASSNAME = Reptil
+CLASS_RAPTOR_PREFIX = ^4[ZPSp Reptil]^3
+CLASS_RAPTOR_INFO = Voce eh o Reptil ^1||^3 Aperte ^4[E]^3 para usar a Velocidade ^1(Quando disponivel)
+CLASS_RAPTOR_SKILL_READY = Sua Velocidade esta pronta
+ARE_RAPTOR = %s eh o Reptil
+SKILL_RAPTOR_COOLDOWN = Habilidade disponivel em: %d
+
+[es]
+RAPTOR_CLASSNAME = Raptor
+CLASS_RAPTOR_PREFIX = ^4[ZPSp Raptor]^3
+CLASS_RAPTOR_INFO = Tu eres el Raptor ^1||^3 Pressione ^4[E]^3 para usar la Velocidad ^1(Cuando disponible)
+CLASS_RAPTOR_SKILL_READY = Su Velocidad estas pronta
+ARE_RAPTOR = %s eres el Raptor
+SKILL_RAPTOR_COOLDOWN = Habilidad disponible en: %d

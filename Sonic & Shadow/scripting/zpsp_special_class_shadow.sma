@@ -29,19 +29,35 @@
 #include <zombie_plague_special>
 #include <amx_settings_api>
 
-#if ZPS_INC_VERSION < 44
-	#assert Zombie Plague Special 4.4 (Beta) or Higher Include File Required. Download Link: https://forums.alliedmods.net/showthread.php?t=260845
+
+#if ZPS_INC_VERSION < 45
+	#assert Zombie Plague Special 4.5 Include File Required. Download Link: https://forums.alliedmods.net/showthread.php?t=260845
 #endif
 
-new const ZP_CUSTOMIZATION_FILE[] = "zombie_plague_special.ini"
+/*-------------------------------------
+--> Sound Config
+--------------------------------------*/
+// Ambience enums
+enum _handler { AmbiencePrecache[64], Float:AmbienceDuration }
 
-new Array:g_sound_shadow, g_ambience_sounds, Array:g_sound_amb_shadow_dur, Array: g_sound_ambience_shadow
+// Enable Ambience?
+const ambience_enable = 1
 
-// Default Sounds
-new const sound_shadow[][] = { "zpsp_sonic/round_start_sega.wav" }
-new const ambience_shadow_sound[][] = { "sound/zpsp_sonic/shadow_ambience.mp3" } 
-new const ambience_shadow_dur[][] = { "268" }
+// Ambience sounds
+new const gamemode_ambiences[][_handler] = {	
+	// Sounds					// Duration
+	{ "sound/zpsp_sonic/shadow_ambience.mp3", 268.0 }
+}
 
+// Round start sounds
+new const gamemode_round_start_snd[][] = { 
+	"zpsp_sonic/round_start_sega.wav"
+}
+
+/*-------------------------------------
+--> Class Configs
+--------------------------------------*/
+#define Make_Acess ADMIN_IMMUNITY 	// Flag Acess make
 new const sp_name[] = "Shadow"
 new const sp_model[] = "zpsp_shadow"
 new const sp_knifemodel[] = "models/v_knife.mdl"
@@ -52,21 +68,26 @@ new const Float:sp_gravity = 0.4
 new const sp_aura_size = 0
 new const Float:sp_knockback = 0.25
 new const sp_allow_glow = 0
-new const sp_color_r =  255
-new const sp_color_g = 69
-new const sp_color_b = 0
-new acess_flags[2]
+new sp_color_rgb[3] =  { 255, 69, 0 }
+
+enum { SND_BOOST = 0, SND_JUMP, SND_HOMMING_AIM, SND_HOMMING_ATTACK, SND_SPIN_START, SND_SPIN_UNLEASH }
+new const skill_sounds[][] = {
+	"zpsp_sonic/boost.wav",
+	"zpsp_sonic/jump.wav",
+	"zpsp_sonic/homming_lockon.wav",
+	"zpsp_sonic/homming_attack.wav",
+	"zpsp_sonic/spindash_start.wav",
+	"zpsp_sonic/spindash_unleash.wav"
+}
+
+/*-------------------------------------
+--> Gamemode Config
+--------------------------------------*/
+new const g_chance = 90						// Gamemode chance
+#define Start_Mode_Acess ADMIN_IMMUNITY
 
 // Variables
-new g_gameid, g_msg_sync, cvar_minplayers, cvar_shadow_damage, g_speciald, g_maxplayers
-new const g_chance = 90
-
-// Enable Ambience?
-#define AMBIENCE_ENABLE 1
-
-// Ambience sounds task
-#define TASK_AMB 3256
-
+new g_gameid, g_msg_sync, cvar_minplayers, cvar_shadow_damage, g_special_id
 new Float:Time1, Float:fAim[3], Float:User_fVelocity[3][33], Float:Time_Bot[33], Float:Time_skill[33];
 
 #define MAX_BOOST_GAUGE 20
@@ -79,39 +100,22 @@ enum {
 #define TASK_HUD_BOOST 213121
 #define TASK_HOMMING_ATTACK 1230912
 
-new g_spin_force[33], g_in_dash_attack[33], cvar_attack_damage[3], g_sequence_anim[33], g_boost_gauge[33], g_aim_ent[33]
-new g_homming_target[33], used_homming[33], g_ShadowTrail, have_trail[33]//, g_game_SvS
+new g_spin_force[33], g_in_dash_attack[33], cvar_attack_damage[3], g_sequence_anim[33], g_boost_gauge[33], g_aim_ent[33], g_sonic_id
+new g_homming_target[33], used_homming[33], g_ShadowTrail, have_trail[33], cvar_camera_distance, bool:g_inthird_person[33]
 
 #define CAMERA_OWNER EV_INT_iuser4
 #define CAMERA_CLASSNAME "shadow_camera"
 #define CAMERA_MODEL "models/rpgrocket.mdl"
-new cvar_camera_distance, bool:g_inthird_person[33]
-
-new const skill_sounds[][] = {
-	"zpsp_sonic/boost.wav",
-	"zpsp_sonic/jump.wav",
-	"zpsp_sonic/homming_lockon.wav",
-	"zpsp_sonic/homming_attack.wav",
-	"zpsp_sonic/spindash_start.wav",
-	"zpsp_sonic/spindash_unleash.wav"
-}
-
-enum {
-	SND_BOOST = 0,
-	SND_JUMP,
-	SND_HOMMING_AIM,
-	SND_HOMMING_ATTACK,
-	SND_SPIN_START,
-	SND_SPIN_UNLEASH
-}
-
 #define HOMMING_AIM_CLASSNAME "zpsp_shadow_homming_aim"
 #define HOMMING_MODEL "models/zpsp_homming_aim.mdl"
 
-public plugin_init()
-{
+#define GetUserShadow(%1) (zp_get_zombie_special_class(%1) == g_special_id) 
+#define IsShadowMode() (zp_get_current_mode() == g_gameid)
+#define zp_get_user_sonic(%1) (zp_get_human_special_class(%1) == g_sonic_id)
+
+public plugin_init() {
 	// Plugin registeration.
-	register_plugin("[ZP] Class Shadow","1.0", "[P]erfec[T] [S]cr[@]s[H]")
+	register_plugin("[ZPSp] Special Class: Shadow", "1.1", "[P]erfec[T] [S]cr[@]s[H]")
 	register_dictionary("zpsp_sonic_shadow.txt")
 	
 	cvar_minplayers = register_cvar("zp_shadow_minplayers", "2")
@@ -128,237 +132,138 @@ public plugin_init()
 	register_event("HLTV", "event_round_start", "a", "1=0", "2=0")
 	
 	g_msg_sync = CreateHudSyncObj()
-	g_maxplayers = get_maxplayers()
-	//g_game_SvS = zp_get_gamemode_id("Shadow vs Sonic")
+	g_sonic_id = zp_get_special_class_id(GET_HUMAN, "Sonic")
 }
 
-
 // Game modes MUST be registered in plugin precache ONLY
-public plugin_precache()
-{
-	// Read the access flag
-	static user_access[40], i, buffer[250]
-	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "START MODE SHADOW", user_access, charsmax(user_access)))
-	{
-		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "START MODE SHADOW", "a")
-		formatex(user_access, charsmax(user_access), "a")
-	}
-	acess_flags[0] = read_flags(user_access)
-	
-	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "MAKE SHADOW", user_access, charsmax(user_access)))
-	{
-		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Access Flags", "MAKE SHADOW", "a")
-		formatex(user_access, charsmax(user_access), "a")
-	}
-	acess_flags[1] = read_flags(user_access)
-	
-	g_sound_shadow = ArrayCreate(64, 1)
-	g_sound_ambience_shadow = ArrayCreate(64, 1)
-	g_sound_amb_shadow_dur = ArrayCreate(64, 1)
-	
-	// Load from external file
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Sounds", "ROUND SHADOW", g_sound_shadow)
-	
-	// Precache the play sounds
-	if (ArraySize(g_sound_shadow) == 0)
-	{
-		for (i = 0; i < sizeof sound_shadow; i++)
-			ArrayPushString(g_sound_shadow, sound_shadow[i])
-		
-		// Save to external file
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Sounds", "ROUND SHADOW", g_sound_shadow)
-	}
-	
-	// Precache sounds
-	for (i = 0; i < ArraySize(g_sound_shadow); i++)
-	{
-		ArrayGetString(g_sound_shadow, i, buffer, charsmax(buffer))
-		precache_ambience(buffer)
-	}
-	
-	// Ambience Sounds
-	g_ambience_sounds = AMBIENCE_ENABLE
-	if(!amx_load_setting_int(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "SHADOW ENABLE", g_ambience_sounds))
-		amx_save_setting_int(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "SHADOW ENABLE", g_ambience_sounds)
-	
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "SHADOW SOUNDS", g_sound_ambience_shadow)
-	amx_load_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "SHADOW DURATIONS", g_sound_amb_shadow_dur)
-	
-	
-	// Save to external file
-	if (ArraySize(g_sound_ambience_shadow) == 0)
-	{
-		for (i = 0; i < sizeof ambience_shadow_sound; i++)
-			ArrayPushString(g_sound_ambience_shadow, ambience_shadow_sound[i])
-		
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "SHADOW SOUNDS", g_sound_ambience_shadow)
-	}
-	
-	if (ArraySize(g_sound_amb_shadow_dur) == 0)
-	{
-		for (i = 0; i < sizeof ambience_shadow_dur; i++)
-			ArrayPushString(g_sound_amb_shadow_dur, ambience_shadow_dur[i])
-		
-		amx_save_setting_string_arr(ZP_CUSTOMIZATION_FILE, "Ambience Sounds", "SHADOW DURATIONS", g_sound_amb_shadow_dur)
-	}
-	
-	// Ambience Sounds
-	if (g_ambience_sounds) {
-		for (i = 0; i < ArraySize(g_sound_ambience_shadow); i++) {
-			ArrayGetString(g_sound_ambience_shadow, i, buffer, charsmax(buffer))
-			precache_ambience(buffer)
-		}
-	}
+public plugin_precache() {
+	// Register Special Class and Game mod
+	g_gameid = zpsp_register_gamemode(sp_name, Start_Mode_Acess, g_chance, 0, ZP_DM_NONE, .uselang=1, .langkey="SHADOW_CLASSNAME")
+	g_special_id = zp_register_zombie_special(sp_name, sp_model, sp_knifemodel, sp_painsound, sp_hp, sp_speed, sp_gravity, Make_Acess, sp_knockback, sp_aura_size, sp_allow_glow, sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2])
+
+	// Set lang configuration
+	amx_save_setting_int(ZP_SPECIAL_CLASSES_FILE, fmt("Z:%s", sp_name), "NAME BY LANG", 1)
+	amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, fmt("Z:%s", sp_name), "LANG KEY", "SHADOW_CLASSNAME")
 
 	precache_model(CAMERA_MODEL)
 	precache_model(HOMMING_MODEL)
 	g_ShadowTrail = precache_model("sprites/laserbeam.spr")
 	
-	// Register Special Class and Game mod
-	g_gameid = zpsp_register_gamemode(sp_name, acess_flags[0], g_chance, 0, 0)
-	g_speciald = zp_register_zombie_special(sp_name, sp_model, sp_knifemodel, sp_painsound, sp_hp, sp_speed, sp_gravity, acess_flags[1], sp_knockback, sp_aura_size, sp_allow_glow, sp_color_r, sp_color_g, sp_color_b)
+	static i;
+	for(i = 0; i < sizeof skill_sounds; i++)
+		precache_sound(skill_sounds[i])
+
+	// Register round start sound
+	for(i = 0; i < sizeof gamemode_round_start_snd; i++)
+		zp_register_start_gamemode_snd(g_gameid, gamemode_round_start_snd[i])
+
+	// Register ambience sounds
+	for (i = 0; i < sizeof gamemode_ambiences; i++)
+		zp_register_gamemode_ambience(g_gameid, gamemode_ambiences[i][AmbiencePrecache], gamemode_ambiences[i][AmbienceDuration], ambience_enable)
 }
 
-public plugin_natives()
-{
-	// Register Natives
-	register_native("zp_get_user_shadow", "native_get_user_shadow", 1)
-	register_native("zp_make_user_shadow", "native_make_user_shadow", 1)
-	register_native("zp_get_shadow_count", "native_get_shadow_count", 1)
-	register_native("zp_is_shadow_round", "native_is_shadow_round", 1)
-	register_native("zp_is_shadow_enable", "native_is_shadow_enable", 1)
+/*-------------------------------------
+--> Natives
+--------------------------------------*/
+public plugin_natives() {
+	register_native("zp_get_user_shadow", "native_get_user_shadow")
+	register_native("zp_make_user_shadow", "native_make_user_shadow")
+	register_native("zp_get_shadow_count", "native_get_shadow_count")
+	register_native("zp_is_shadow_round", "native_is_shadow_round")
+	register_native("zp_is_shadow_enable", "native_is_shadow_enable")
 }
+
+// Native: zp_get_user_shadow(id)
+public native_get_user_shadow(plugin_id, num_params) 
+	return GetUserShadow(get_param(1));
+
+// Native: zp_make_user_shadow(id)
+public native_make_user_shadow(plugin_id, num_params) 
+	return (zp_make_user_special(get_param(1), g_special_id, GET_ZOMBIE));
+
+// Native: zp_get_shadow_count()
+public native_get_shadow_count(plugin_id, num_params)
+	return zp_get_special_count(GET_ZOMBIE, g_special_id);
+
+// Native: zp_is_shadow_round()
+public native_is_shadow_round(plugin_id, num_params)
+	return IsShadowMode();
+
+// Native: zp_is_shadow_enable()
+public native_is_shadow_enable(plugin_id, num_params) 
+	return (zp_is_special_class_enable(GET_ZOMBIE, g_special_id));
 
 // Attack Damage
-public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type)
-{
+public fw_TakeDamage(victim, inflictor, attacker, Float:damage, damage_type) {
 	if(!is_user_connected(victim) || !is_user_connected(attacker))
 		return HAM_IGNORED
 	
-	if(inflictor == attacker && zp_get_zombie_special_class(attacker) == g_speciald)
+	if(inflictor == attacker && GetUserShadow(attacker))
 		SetHamParamFloat(4, damage * get_pcvar_float(cvar_shadow_damage))
 
 	// Prevent damage fall (Some times happens when use Homming Attack)
-	if(damage_type & DMG_FALL && zp_get_zombie_special_class(victim) == g_speciald)
+	if(damage_type & DMG_FALL && GetUserShadow(victim))
 		return HAM_SUPERCEDE;
 		
 	return HAM_IGNORED
 }
 
 // Player spawn post
-public zp_player_spawn_post(id)
-{
+public zp_player_spawn_post(id) {
 	// Check for current mode
-	if(zp_get_current_mode() == g_gameid)
+	if(IsShadowMode())
 		zp_disinfect_user(id)
 
 	client_cmd(id, "-duck")
 	client_cmd(id, "-duck")
 }
 
-public zp_round_started_pre(game)
-{
+public zp_round_started_pre(game) {
 	// Check if it is our game mode
-	if(game == g_gameid)
-	{
-		// Check for min players
-		if(zp_get_alive_players() < get_pcvar_num(cvar_minplayers))
-			return ZP_PLUGIN_HANDLED
-
-		// Start our new mode
-		start_shadow_mode()
-	}
-	return PLUGIN_CONTINUE
-}
-
-public zp_round_started(game, id)
-{
-	// Check if it is our game mode
-	if(game == g_gameid)
-	{
-		// Play the starting sound
-		static sound[100]
-		ArrayGetString(g_sound_shadow, random_num(0, ArraySize(g_sound_shadow) - 1), sound, charsmax(sound))
-		zp_play_sound(0, sound)
-		
-		// Remove ambience task affects
-		remove_task(TASK_AMB)
-		
-		// Set task to start ambience sounds
-		set_task(2.0, "start_ambience_sounds", TASK_AMB)
-	}
-}
-
-public zp_game_mode_selected(gameid, id)
-{
-	// Check if our game mode was called
-	if(gameid == g_gameid)
-		start_shadow_mode()
+	if(game != g_gameid)
+		return PLUGIN_CONTINUE
 	
-	// Make the compiler happy again =)
+	// Check for min players
+	if(zp_get_alive_players() < get_pcvar_num(cvar_minplayers))
+		return ZP_PLUGIN_HANDLED
+
 	return PLUGIN_CONTINUE
+}
+
+public zp_round_started(game, id) {
+	if(game == g_gameid)
+		start_shadow_mode()
 }
 
 // This function contains the whole code behind this game mode
-start_shadow_mode()
-{
-	static id, i,  has_shadow
+start_shadow_mode() {
+	static id, i, has_shadow
 	has_shadow = false
-	for (i = 1; i <= g_maxplayers; i++) {
+	for (i = 1; i <= MaxClients; i++) {
 		if(!is_user_alive(i))
 			continue;
 
-		if(zp_get_zombie_special_class(i) == g_speciald) {
+		if(GetUserShadow(i)) {
 			id = i						// Get Shadow Index
 			has_shadow = true
+			break;
 		}
 	}
 
 	if(!has_shadow) {
 		id = zp_get_random_player()
-		zp_make_user_special(id, g_speciald, GET_ZOMBIE)
+		zp_make_user_special(id, g_special_id, GET_ZOMBIE)
 	}
 	
 	static name[32]; get_user_name(id, name, charsmax(name));
-	set_hudmessage(sp_color_r, sp_color_g, sp_color_b, -1.0, 0.17, 1, 0.0, 5.0, 1.0, 1.0, -1)
+	set_hudmessage(sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2], -1.0, 0.17, 1, 0.0, 5.0, 1.0, 1.0, -1)
 	ShowSyncHudMsg(0, g_msg_sync, "%L", LANG_PLAYER, "START_SHADOW", name)
-
-	// Turn the remaining players into zombies
-	for (id = 1; id <= g_maxplayers; id++)
-	{
-		// Not alive
-		if(!is_user_alive(id))
-			continue;
-			
-		ScreenFade(id, 5, sp_color_r, sp_color_g, sp_color_b, 255)
-	}
-
+	ScreenFade(0, 5, sp_color_rgb, 255)
 }
 
-public start_ambience_sounds()
-{
-	if (!g_ambience_sounds)
-		return;
-	
-	// Variables
-	static amb_sound[64], sound,  str_dur[20]
-	
-	// Select our ambience sound
-	sound = random_num(0, ArraySize(g_sound_ambience_shadow)-1)
-
-	ArrayGetString(g_sound_ambience_shadow, sound, amb_sound, charsmax(amb_sound))
-	ArrayGetString(g_sound_amb_shadow_dur, sound, str_dur, charsmax(str_dur))
-	
-	zp_play_sound(0, amb_sound)
-	
-	// Start the ambience sounds
-	set_task(str_to_float(str_dur), "start_ambience_sounds", TASK_AMB)
-}
-public zp_round_ended() {
-	remove_task(TASK_AMB)
-}
 public event_round_start() {
-	for(new id = 1; id <= g_maxplayers; id++) {
+	static id;
+	for(id = 1; id <= MaxClients; id++) {
 		if(!is_user_connected(id))
 			continue;
 
@@ -367,9 +272,8 @@ public event_round_start() {
 	}
 }
 
-public zp_user_infected_post(id)
-{
-	if(zp_get_zombie_special_class(id) == g_speciald) 
+public zp_user_infected_post(id) {
+	if(GetUserShadow(id)) 
 	{
 		if(!zp_has_round_started())
 			zp_set_custom_game_mod(g_gameid)	// Force Start Shadow Round
@@ -392,27 +296,23 @@ public zp_user_infected_post(id)
 			set_task(1.0, "boost_gauge_hud", id+TASK_HUD_BOOST, _, _, "b")
 		}
 
-		zp_colored_print(id, 1, "%L", id, "YOURE_SHADOW")
-		zp_colored_print(id, 1, "%L", id, "SHADOW_INFO")
+		client_print_color(id, print_team_default, "%L %L", id, "SHADOW_CHAT_PREFIX", id, "YOURE_SHADOW")
+		client_print_color(id, print_team_default, "%L %L", id, "SHADOW_CHAT_PREFIX", id, "SHADOW_INFO")
 	}
 	else if(g_inthird_person[id]) {
 		reset_shadow_vars(id, g_inthird_person[id] ? 1 : 0)
 	}
 }
 
-public forward_AddToFullPack(es_handle, e, id, host, hostflags, player, pSet)
-{
+public forward_AddToFullPack(es_handle, e, id, host, hostflags, player, pSet) {
 	if(!is_user_connected(host))
 		return FMRES_IGNORED;
 
 	if(is_user_alive(id) && player) {
-		if(zp_get_zombie_special_class(id) == g_speciald && g_sequence_anim[id] != -1)
-		{
+		if(GetUserShadow(id) && g_sequence_anim[id] != -1) {
 			// Set players sequence
 			if(get_es(es_handle, ES_Sequence) != g_sequence_anim[id]) {
 				set_es(es_handle, ES_Sequence, g_sequence_anim[id]);
-				//set_es(es_handle, ES_AnimTime, get_gametime());
-				//set_es(es_handle, ES_Frame, g_frame[id]);
 			}
 		}
 	}
@@ -423,7 +323,7 @@ public forward_AddToFullPack(es_handle, e, id, host, hostflags, player, pSet)
 	if(!is_user_alive(g_homming_target[host]) || g_aim_ent[host] != id || !pev_valid(id))
 		return FMRES_IGNORED;
 
-	if(zp_get_zombie_special_class(host) != g_speciald || zp_get_user_zombie(g_homming_target[host]) || used_homming[host])
+	if(!GetUserShadow(host) || zp_get_user_zombie(g_homming_target[host]) || used_homming[host])
 		return FMRES_IGNORED;
 
 	if(entity_range(host, g_homming_target[host]) > 500.0) 
@@ -441,9 +341,8 @@ public forward_AddToFullPack(es_handle, e, id, host, hostflags, player, pSet)
 	return FMRES_HANDLED;
 }
 
-public zp_user_humanized_post(id)
-{
-	if(zp_get_human_special_class(id) == zp_get_special_class_id(GET_HUMAN, "Sonic")) {
+public zp_user_humanized_post(id) {
+	if(zp_get_user_sonic(id)) {
 		reset_shadow_vars(id, 0)
 	}
 	else reset_shadow_vars(id, 1)
@@ -451,64 +350,27 @@ public zp_user_humanized_post(id)
 
 public client_putinserver(id) reset_shadow_vars(id, g_inthird_person[id] ? 1 : 0);
 
-stock ScreenFade(id, Timer, r, g ,b, Alpha) 
-{	
-	if(!is_user_connected(id)) return;
-	
-	message_begin(MSG_ONE_UNRELIABLE, get_user_msgid("ScreenFade"), _, id);
+stock ScreenFade(id, Timer, Colors[3], Alpha) {
+	if(!is_user_connected(id) && id)
+		return;
+
+	message_begin(id ? MSG_ONE_UNRELIABLE : MSG_BROADCAST, get_user_msgid("ScreenFade"), _, id);
 	write_short((1<<12) * Timer)
 	write_short(1<<12)
 	write_short(0)
-	write_byte(r)
-	write_byte(g)
-	write_byte(b)
+	write_byte(Colors[0])
+	write_byte(Colors[1])
+	write_byte(Colors[2])
 	write_byte(Alpha)
 	message_end()
-}
-
-public native_get_user_shadow(id)
-	return (zp_get_zombie_special_class(id) == g_speciald)
-	
-public native_make_user_shadow(id)
-	return (zp_make_user_special(id, g_speciald, GET_ZOMBIE))
-	
-public native_get_shadow_count()
-	return zp_get_special_count(GET_ZOMBIE, g_speciald)
-	
-public native_is_shadow_round()
-	return (zp_get_current_mode() == g_gameid)	
-
-public native_is_shadow_enable() 
-	return (zp_is_special_class_enable(GET_ZOMBIE, g_speciald));
-
-precache_ambience(sound[])
-{
-	static buffer[150]
-	if(equal(sound[strlen(sound)-4], ".mp3")) {
-		if(!equal(sound, "sound/", 6) && !file_exists(sound) && !equal(sound, "media/", 6))
-			format(buffer, charsmax(buffer), "sound/%s", sound)
-		else
-			format(buffer, charsmax(buffer), "%s", sound)
-		
-		precache_generic(buffer)
-	}
-	else  {
-		if(equal(sound, "sound/", 6))
-			format(buffer, charsmax(buffer), "%s", sound[6])
-		else
-			format(buffer, charsmax(buffer), "%s", sound)
-		
-		precache_sound(buffer)
-	}
-}
+} 
 
 
-public client_PreThink(id)
-{
-	if(!is_user_alive(id)) // || zp_has_round_ended())
+public client_PreThink(id) {
+	if(!is_user_alive(id))
 		return
 
-	if(!zp_get_user_zombie(id) || zp_get_zombie_special_class(id) != g_speciald) 
+	if(!GetUserShadow(id)) 
 		return;
 
 	static in_ground, iButton, iOldButton, Float:fVelocity[3]
@@ -559,8 +421,7 @@ public client_PreThink(id)
 		client_cmd(id, "+duck")
 	}
 
-	if(iButton & IN_RELOAD && (g_in_dash_attack[id] == 0 || g_in_dash_attack[id] == ATTACK_SPINDASH) && !task_exists(id+TASK_SPIN_DASH))
-	{
+	if(iButton & IN_RELOAD && (g_in_dash_attack[id] == 0 || g_in_dash_attack[id] == ATTACK_SPINDASH) && !task_exists(id+TASK_SPIN_DASH)) {
 		if(!(iOldButton & IN_RELOAD)) {
 			Time1 = get_gametime()
 			emit_sound(id, CHAN_STATIC, skill_sounds[SND_SPIN_START], 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -656,8 +517,7 @@ public client_PreThink(id)
 		emit_sound(id, CHAN_STATIC, skill_sounds[SND_BOOST], VOL_NORM, ATTN_NORM, SND_STOP, PITCH_NORM)
 	}
 
-	if((iButton & IN_JUMP) && !(iOldButton & IN_JUMP) && !g_in_dash_attack[id])
-	{
+	if((iButton & IN_JUMP) && !(iOldButton & IN_JUMP) && !g_in_dash_attack[id]) {
 		if(is_user_bot(id)) {
 			iButton &= IN_JUMP
 			iOldButton |= IN_JUMP
@@ -699,11 +559,10 @@ public client_PreThink(id)
 	}
 }
 
-public homming_attack_task(id)
-{
+public homming_attack_task(id) {
 	id -= TASK_HOMMING_ATTACK
 
-	if(!zp_get_user_zombie(id) || zp_get_zombie_special_class(id) != g_speciald) {
+	if(!zp_get_user_zombie(id) || !GetUserShadow(id)) {
 		remove_task(id+TASK_HOMMING_ATTACK)
 		return;
 	}
@@ -722,8 +581,7 @@ public homming_attack_task(id)
 	}
 }
 
-public end_homming_attack(id)
-{
+public end_homming_attack(id) {
 	id -= TASK_HOMMING_ATTACK
 
 	remove_task(id+TASK_HOMMING_ATTACK)
@@ -734,8 +592,7 @@ public end_homming_attack(id)
 	if(have_trail[id]) remove_trail(id)
 }
 
-public spin_dash_loop(id)
-{
+public spin_dash_loop(id) {
 	id -= TASK_SPIN_DASH
 
 	if(!is_user_alive(id)) {
@@ -743,7 +600,7 @@ public spin_dash_loop(id)
 		return
 	}
 
-	if(!zp_get_user_zombie(id) || zp_get_zombie_special_class(id) != g_speciald) {
+	if(!GetUserShadow(id)) {
 		remove_task(id+TASK_SPIN_DASH)
 		return;
 	}
@@ -804,12 +661,11 @@ public reset_shadow_vars(id, remove_cam) {
 	g_aim_ent[id] = 0
 }
 
-public fw_Touch(attacker, victim)
-{
+public fw_Touch(attacker, victim) {
 	if(!is_user_alive(attacker) || !pev_valid(victim))
 		return FMRES_IGNORED
 
-	if(zp_get_zombie_special_class(attacker) == g_speciald && g_in_dash_attack[attacker]) 
+	if(GetUserShadow(attacker) && g_in_dash_attack[attacker]) 
 	{
 		if(is_user_alive(victim)) {
 			if(!zp_get_user_zombie(victim)) {
@@ -839,8 +695,7 @@ public fw_Touch(attacker, victim)
 /*--------------------------------------------------------
 	[Third Person View (Thanks William for his code)]
 ---------------------------------------------------------*/
-public set_cam_ent(id)
-{
+public set_cam_ent(id) {
 	new ient = create_entity("trigger_camera")
 	
 	//if(!is_valid_ent(ient))
@@ -902,14 +757,12 @@ public fw_camera_think(ient) {
 	entity_set_float(ient, EV_FL_nextthink, get_gametime())
 }
 
-public remove_cam_ent(id, attachview)
-{
+public remove_cam_ent(id, attachview) {
 	if(attachview) fm_attach_view(id, id)
 
 	new ient = -1
 
-	while((ient = find_ent_by_class(ient, CAMERA_CLASSNAME)))
-	{
+	while((ient = find_ent_by_class(ient, CAMERA_CLASSNAME))) {
 		if(!is_valid_ent(ient))
 			continue
 		
@@ -922,18 +775,17 @@ public remove_cam_ent(id, attachview)
 	}
 }
 
-public fw_PlayerKilled_Post(victim, attacker)
-{
+public fw_PlayerKilled_Post(victim, attacker) {
 	if(!is_user_connected(victim))
 		return HAM_IGNORED;
 
-	if(zp_get_zombie_special_class(victim) == g_speciald && g_inthird_person[victim])
+	if(GetUserShadow(victim) && g_inthird_person[victim])
 		reset_shadow_vars(victim, 1)
 
 	if(!is_user_connected(attacker))
 		return HAM_IGNORED;
 
-	if(zp_get_zombie_special_class(attacker) == g_speciald) {
+	if(GetUserShadow(attacker)) {
 		if(g_boost_gauge[attacker] + 4 <= MAX_BOOST_GAUGE) 
 			g_boost_gauge[attacker] += 4
 		else
@@ -953,7 +805,7 @@ public boost_gauge_hud(id) {
 		return;
 	}
 
-	if(zp_get_zombie_special_class(id) != g_speciald) {
+	if(!GetUserShadow(id)) {
 		remove_task(id+TASK_HUD_BOOST)
 		return;
 	}
@@ -1004,8 +856,7 @@ public boost_gauge_hud(id) {
 
 }
 
-public FindClosetEnemy(ent)
-{
+public FindClosetEnemy(ent) {
 	if(!is_user_alive(ent))
 		return 0
 
@@ -1016,12 +867,11 @@ public FindClosetEnemy(ent)
 	static Float:Origin[3], Float:EntOrigin[3]
 	get_position(ent, 250.0, 0.0, 0.0, EntOrigin)
 
-	for(new i = 1; i <= g_maxplayers; i++) {
+	for(new i = 1; i <= MaxClients; i++) {
 		if(!is_user_alive(i))
 			continue;
 
-		if(!zp_get_user_zombie(i) && is_visible(ent,  i))// && entity_range(ent, i) < current_dis)
-		{
+		if(!zp_get_user_zombie(i) && is_visible(ent,  i)) { 
 			pev(i, pev_origin, Origin)
 
 			if(get_distance_f(Origin, EntOrigin) > current_dis)
@@ -1034,8 +884,7 @@ public FindClosetEnemy(ent)
 	
 	return indexid
 }
-stock get_position(ent, Float:forw, Float:right, Float:up, Float:vStart[])
-{
+stock get_position(ent, Float:forw, Float:right, Float:up, Float:vStart[]) {
 	if(!pev_valid(ent))
 		return
 		
@@ -1057,13 +906,11 @@ stock get_position(ent, Float:forw, Float:right, Float:up, Float:vStart[])
 	vStart[2] = vOrigin[2] + vForward[2] * forw + vRight[2] * right + vUp[2] * up
 }
 
-public Aim_To(iEnt, Float:vTargetOrigin[3], Float:flSpeed, Style)
-{
+public Aim_To(iEnt, Float:vTargetOrigin[3], Float:flSpeed, Style) {
 	if(!pev_valid(iEnt))	
 		return
 		
-	if(!Style)
-	{
+	if(!Style) {
 		static Float:Vec[3], Float:Angles[3]
 		pev(iEnt, pev_origin, Vec)
 		
@@ -1088,12 +935,10 @@ public Aim_To(iEnt, Float:vTargetOrigin[3], Float:flSpeed, Style)
 		fAngles = vAim[1];
 		pev(iEnt, pev_angles, vAngles);
 		
-		if (vAngles[1] > fAngles)
-		{
+		if (vAngles[1] > fAngles) {
 			f1 = vAngles[1] - fAngles;
 			f2 = 360.0 - vAngles[1] + fAngles;
-			if (f1 < f2)
-			{
+			if (f1 < f2) {
 				vAngles[1] -= flSpeed;
 				vAngles[1] = floatmax(vAngles[1], fAngles);
 			}
@@ -1107,8 +952,7 @@ public Aim_To(iEnt, Float:vTargetOrigin[3], Float:flSpeed, Style)
 		{
 			f1 = fAngles - vAngles[1];
 			f2 = 360.0 - fAngles + vAngles[1];
-			if (f1 < f2)
-			{
+			if (f1 < f2) {
 				vAngles[1] += flSpeed;
 				vAngles[1] = floatmin(vAngles[1], fAngles);
 			}
@@ -1124,8 +968,7 @@ public Aim_To(iEnt, Float:vTargetOrigin[3], Float:flSpeed, Style)
 	}
 }
 
-public hook_ent2(ent, Float:VicOrigin[3], Float:speed)
-{
+public hook_ent2(ent, Float:VicOrigin[3], Float:speed) {
 	if(!pev_valid(ent)) return;
 	
 	static Float:fl_Velocity[3]
@@ -1136,8 +979,7 @@ public hook_ent2(ent, Float:VicOrigin[3], Float:speed)
 	static Float:distance_f
 	distance_f = get_distance_f(EntOrigin, VicOrigin)
 	
-	if (distance_f > 60.0)
-	{
+	if (distance_f > 60.0) {
 		new Float:fl_Time = distance_f / speed
 		
 		fl_Velocity[0] = (VicOrigin[0] - EntOrigin[0]) / fl_Time
@@ -1153,12 +995,11 @@ public hook_ent2(ent, Float:VicOrigin[3], Float:speed)
 	entity_set_vector(ent, EV_VEC_velocity, fl_Velocity)
 }
 
-public set_trail(id, grossura)
-{
+public set_trail(id, grossura) {
 	if(!is_user_alive(id))
 		return;
 
-	if(zp_get_zombie_special_class(id) != g_speciald || have_trail[id])
+	if(!GetUserShadow(id) || have_trail[id])
 		return;
 
 	message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
@@ -1187,12 +1028,11 @@ remove_trail(id) {
 	have_trail[id] = false
 }
 
-public create_homming_aim(id)
-{
+public create_homming_aim(id) {
 	if(!is_user_alive(id))
 		return;
 
-	if(zp_get_zombie_special_class(id) != g_speciald || is_user_bot(id) || !zp_get_user_zombie(id))
+	if(!GetUserShadow(id) || is_user_bot(id) || !zp_get_user_zombie(id))
 		return;
 
 	new ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"))
@@ -1214,12 +1054,11 @@ public create_homming_aim(id)
 	g_aim_ent[id] = ent
 }
 
-public move_homming_aim(attacker, victim)
-{
+public move_homming_aim(attacker, victim) {
 	if(!is_user_alive(attacker))// || !is_user_alive(victim))
 		return;
 
-	if(zp_get_zombie_special_class(attacker) != g_speciald || is_user_bot(attacker)) //|| !zp_get_user_zombie(victim) && attacker != victim)
+	if(!GetUserShadow(attacker) || is_user_bot(attacker)) //|| !zp_get_user_zombie(victim) && attacker != victim)
 		return;
 
 	if(!pev_valid(g_aim_ent[attacker]))

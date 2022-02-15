@@ -1,21 +1,22 @@
 [bp]
-THANOS_TAG = !g[ZPSp Thanos]!y
+THANOS_TAG = ^4[ZPSp Thanos]^1
+THANOS_CLASSNAME = Thanos
 THANOS_AUTO_UNSTUCK = Destravamento Automatico....
 YOU_ARE_THANOS = Voce eh Inevitavel (Thanos) !!!!
-THANOS_INFO = Pressione !t[E]!y para usar a joia selecionada !g||!y Pressione !t[R]!y para escolher a joia
-INFINITY_GEM_WAIT = Aguarde alguns segundos para usar alguma !tJoia do Infinito!y novamente
-ALLOW_USE_GEM = Voce ja pode usar a sua !tJoia do Infinito!y novamente.
+THANOS_INFO = Pressione ^3[E]^1 para usar a joia selecionada ^4||^1 Pressione ^3[R]^1 para escolher a joia
+INFINITY_GEM_WAIT = Aguarde alguns segundos para usar alguma ^3Joia do Infinito^1 novamente
+ALLOW_USE_GEM = Voce ja pode usar a sua ^3Joia do Infinito^1 novamente.
 HUD_TURNED_THANOS = %s EH INEVITAVEL !!!!
 
-REALITY_VICTIM = Suas Armas Viraram Bolhas com a !tJoia da Realidade!y de Thanos
-SOUL_GEM_SKILL = O !t%s!y esta jogando todos para dentro da !tJoia da Alma
-ABSORBEB_BY_SOUL_GEM = Voce foi absorvido pela !tJoia da Alma
-STOPPED_TIME = !t%s!y Parou o Tempo com a !tJoia do Tempo
+REALITY_VICTIM = Suas Armas Viraram Bolhas com a ^3Joia da Realidade^1 de Thanos
+SOUL_GEM_SKILL = O ^3%s^1 esta jogando todos para dentro da ^3Joia da Alma
+ABSORBEB_BY_SOUL_GEM = Voce foi absorvido pela ^3Joia da Alma
+STOPPED_TIME = ^3%s^1 Parou o Tempo com a ^3Joia do Tempo
 TIME_ALTERADY_STOPPED = O Tempo ja esta parado.
 TIME_RETURN_WORKS = O Tempo voltou a andar.
-ALLOW_SNAP_FINGERS = Voce pode fazer o !tEstalar de Dedos!y. Basta selecionar apertando !t[R]
-SNAP_FINGERS = O !t%s!y Estalou os Dedos FUUUUUUUUUUUUUDEUUUUUUUU!!!!!!!!
-SNAP_CHOOSED = Voce foi escolhido aleatoriamente para ser morto no !tEstalo de dedos do Thanos
+ALLOW_SNAP_FINGERS = Voce pode fazer o ^3Estalar de Dedos^1. Basta selecionar apertando ^3[R]
+SNAP_FINGERS = O ^3%s^1 Estalou os Dedos FUUUUUUUUUUUUUDEUUUUUUUU!!!!!!!!
+SNAP_CHOOSED = Voce foi escolhido aleatoriamente para ser morto no ^3Estalo de dedos do Thanos
 
 POWER_GEM = [Joia do Poder]
 SPACE_GEM = [Joia do Espaco]
@@ -26,23 +27,24 @@ TIME_GEM = [Joia do Tempo]
 ALL_GEMS = [Estalar os dedos]
 
 [en]
-THANOS_TAG = !g[ZPSp Thanos]!y
+THANOS_TAG = ^4[ZPSp Thanos]^1
+THANOS_CLASSNAME = Thanos
 THANOS_AUTO_UNSTUCK = Auto-Unstuck....
 YOU_ARE_THANOS = You are Invevitable (Thanos) !!!!
-THANOS_INFO = Press !t[E]!y button for use an selected !tInfinity Stone !g||!y Press !t[R]!y button for choose an !tInfinity Stone
-INFINITY_GEM_WAIT = Wait some seconds for use an !tInfinity Stone!y again
-ALLOW_USE_GEM = You can use an your !tInfinity Stone!y Again.
+THANOS_INFO = Press ^3[E]^1 button for use an selected ^3Infinity Stone ^4||^1 Press ^3[R]^1 button for choose an ^3Infinity Stone
+INFINITY_GEM_WAIT = Wait some seconds for use an ^3Infinity Stone^1 again
+ALLOW_USE_GEM = You can use an your ^3Infinity Stone^1 Again.
 HUD_TURNED_THANOS = %s IS INEVITABLE !!!!
 
-REALITY_VICTIM = Your guns are transformed in burbles because of a !tThanos's Reality Stone!y
-SOUL_GEM_SKILL = !t%s!y is throwing everyone into the !tSoul Stone
-ABSORBEB_BY_SOUL_GEM = You are absorbeb by !tSoul Stone
-STOPPED_TIME = !t%s!y stopped the time with a !tTime Stone
+REALITY_VICTIM = Your guns are transformed in burbles because of a ^3Thanos's Reality Stone^1
+SOUL_GEM_SKILL = ^3%s^1 is throwing everyone into the ^3Soul Stone
+ABSORBEB_BY_SOUL_GEM = You are absorbeb by ^3Soul Stone
+STOPPED_TIME = ^3%s^1 stopped the time with a ^3Time Stone
 TIME_ALTERADY_STOPPED = Time is already stopped.
 TIME_RETURN_WORKS = Time has returned to works !
-ALLOW_SNAP_FINGERS = You can make the !tSnap Fingers!y. Simply select by pressing !t[R]!y Button
-SNAP_FINGERS = OH NOOOOO !!!!!!! the !t%s!y has snapped his fingers !!!!!!!!
-SNAP_CHOOSED = You were randomly chosen to be killed in the !tThanos Finger Snap
+ALLOW_SNAP_FINGERS = You can make the ^3Snap Fingers^1. Simply select by pressing ^3[R]^1 Button
+SNAP_FINGERS = OH NOOOOO !!!!!!! the ^3%s^1 has snapped his fingers !!!!!!!!
+SNAP_CHOOSED = You were randomly chosen to be killed in the ^3Thanos Finger Snap
 
 POWER_GEM = [Power Stone]
 SPACE_GEM = [Space Stone]

@@ -122,8 +122,8 @@ public plugin_precache() {
 	g_special_id = zp_register_human_special(sp_name, sp_model, sp_hp, sp_speed, sp_gravity, Make_Acess, sp_clip_type, sp_aura_size, sp_allow_glow, sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2])
 	
 	// Set lang configuration
-	amx_save_setting_int(ZP_SPECIAL_CLASSES_FILE, sp_name, "NAME BY LANG", 1)
-	amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, sp_name, "LANG KEY", "ANTIDOTER_CLASS_NAME")
+	amx_save_setting_int(ZP_SPECIAL_CLASSES_FILE, fmt("H:%s", sp_name), "NAME BY LANG", 1)
+	amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, fmt("H:%s", sp_name), "LANG KEY", "ANTIDOTER_CLASS_NAME")
 	
 		
 	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "V_M4A1 ANTIDOTER", v_m4a1_model, charsmax(v_m4a1_model))) {

@@ -118,8 +118,8 @@ public plugin_init() {
 public plugin_precache() {	
 	g_gameid = zpsp_register_gamemode(sp_name, Start_Mode_Acess, g_chance, 0, 0, .uselang=1, .langkey="CHUCK_NORRIS_NAME")
 	g_special_id = zp_register_human_special(sp_name, sp_model, sp_hp, sp_speed, sp_gravity, Make_Acess, sp_clip_type, sp_aura_size, sp_allow_glow, sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2])
-	amx_save_setting_int(ZP_SPECIAL_CLASSES_FILE, sp_name, "NAME BY LANG", 1)
-	amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, sp_name, "LANG KEY", "CHUCK_NORRIS_NAME")
+	amx_save_setting_int(ZP_SPECIAL_CLASSES_FILE, fmt("H:%s", sp_name), "NAME BY LANG", 1)
+	amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, fmt("H:%s", sp_name), "LANG KEY", "CHUCK_NORRIS_NAME")
 
 	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "V_KNIFE CHUCK NORRIS", v_knife_model, charsmax(v_knife_model))) {
 		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "V_KNIFE CHUCK NORRIS", default_v_knife)
