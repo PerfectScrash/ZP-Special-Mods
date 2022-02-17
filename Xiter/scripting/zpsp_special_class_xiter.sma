@@ -36,9 +36,18 @@ new const sp_clip_type = 2 // Unlimited Ammo (0 - Disable | 1 - Unlimited Semi C
 new const sp_allow_glow = 1
 new const sp_color_rgb[3] = { 255, 0, 255 }
 
-// Default XM1014 Models
-new const default_v_xm1014[] = "models/v_xm1014.mdl"
-new const default_p_xm1014[] = "models/p_xm1014.mdl"
+// Weapon enums
+enum _wpn_hand { wpn_index, IniLoad[32], wpn_give[32], Default_V_model[64], Default_P_model[64] }
+
+// Default Xiter Weapons
+#define MAX_WEAPONS 4
+new const xiter_weapons[MAX_WEAPONS][_wpn_hand] = {
+	// Weapon Id |	Wpn Ini load	| Weapon Give item 	|    V Model			| 	P_Model
+	{ CSW_XM1014, 	"XM1014",		"weapon_xm1014", 	"models/v_xm1014.mdl", 	"models/p_xm1014.mdl" },
+	{ CSW_M3, 		"M3",			"weapon_m3", 		"models/v_m3.mdl", 		"models/p_m3.mdl" },
+	{ CSW_SCOUT, 	"SCOUT",		"weapon_scout", 	"models/v_scout.mdl",	"models/p_scout.mdl" },
+	{ CSW_DEAGLE, 	"DEAGLE",		"weapon_deagle", 	"models/v_deagle.mdl",	"models/p_deagle.mdl" }
+}
 
 /*-------------------------------------
 --> Ambience/Round Sound Config
@@ -69,7 +78,7 @@ new const g_chance = 90						// Gamemode chance
 /*-------------------------------------
 --> Variables/Defines
 --------------------------------------*/
-new g_gameid, g_msg_sync, cvar_minplayers, g_special_id, cvar_damage, cvar_pattack_rate, v_xm1014_model[64], p_xm1014_model[64]
+new g_gameid, g_msg_sync, cvar_minplayers, g_special_id, cvar_damage, cvar_pattack_rate, v_xiter_model[MAX_WEAPONS][64], p_xiter_model[MAX_WEAPONS][64]
 
 // Weapons Offsets
 #define NO_RECOIL_WEAPONS_BITSUM (1<<CSW_HEGRENADE|1<<CSW_FLASHBANG|1<<CSW_SMOKEGRENADE|1<<CSW_C4)
@@ -94,7 +103,6 @@ public plugin_init() {
 	cvar_pattack_rate = register_cvar("zp_xiter_weapon_rate", "0.05")
 	
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
-	register_event("CurWeapon","checkModel","be","1=1")
 
 	// Thanks MasI
 	static weapon_name[24], i
@@ -117,19 +125,22 @@ public plugin_precache() {
 	g_gameid = zpsp_register_gamemode(sp_name, Start_Mode_Acess, g_chance, 0, ZP_DM_NONE)
 	g_special_id = zp_register_human_special(sp_name, sp_model, sp_hp, sp_speed, sp_gravity, Make_Acess, sp_clip_type, sp_aura_size, sp_allow_glow, sp_color_rgb[0], sp_color_rgb[1], sp_color_rgb[2])
 
-	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "V_XM1014 XITER", v_xm1014_model, charsmax(v_xm1014_model))) {
-		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "V_XM1014 XITER", default_v_xm1014)
-		formatex(v_xm1014_model, charsmax(v_xm1014_model), default_v_xm1014)
-	}
-	precache_model(v_xm1014_model)
-	
-	if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "P_XM1014 XITER", p_xm1014_model, charsmax(p_xm1014_model))) {
-		amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", "P_XM1014 XITER", default_p_xm1014)
-		formatex(p_xm1014_model, charsmax(p_xm1014_model), default_p_xm1014)
-	}
-	precache_model(p_xm1014_model)
-
 	static i
+	for(i = 0; i < MAX_WEAPONS; i++) {
+		if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", fmt("V_%s XITER", xiter_weapons[i][IniLoad]), v_xiter_model[i], charsmax(v_xiter_model[]))) {
+			amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", fmt("V_%s XITER", xiter_weapons[i][IniLoad]), xiter_weapons[i][Default_V_model])
+			formatex(v_xiter_model[i], charsmax(v_xiter_model[]), xiter_weapons[i][Default_V_model])
+		}
+		precache_model(v_xiter_model[i])
+		
+		if(!amx_load_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", fmt("P_%s XITER", xiter_weapons[i][IniLoad]), p_xiter_model[i], charsmax(p_xiter_model[]))) {
+			amx_save_setting_string(ZP_CUSTOMIZATION_FILE, "Weapon Models", fmt("P_%s XITER", xiter_weapons[i][IniLoad]), xiter_weapons[i][Default_P_model])
+			formatex(p_xiter_model[i], charsmax(p_xiter_model[]), xiter_weapons[i][Default_P_model])
+		}
+		precache_model(p_xiter_model[i])
+	}
+
+	
 	// Register round start sound
 	for(i = 0; i < sizeof gamemode_round_start_snd; i++)
 		zp_register_start_gamemode_snd(g_gameid, gamemode_round_start_snd[i])
@@ -165,17 +176,21 @@ public native_is_xiter_round(plugin_id, num_params)
 /*-------------------------------------
 --> Class Functions
 --------------------------------------*/
-// XM1014 Model
-public checkModel(id) {
+// Xiter Weapon Model
+public zp_fw_deploy_weapon(id, wpnid) {
 	if(!is_user_alive(id))
 		return PLUGIN_HANDLED;
 
 	if(!GetUserXiter(id))
 		return PLUGIN_HANDLED;
-	
-	if(get_user_weapon(id) == CSW_XM1014) {
-		set_pev(id, pev_viewmodel2, v_xm1014_model)
-		set_pev(id, pev_weaponmodel2, p_xm1014_model)
+
+	static i;
+	for(i = 0; i < MAX_WEAPONS; i++) {
+		if(wpnid == xiter_weapons[i][wpn_index]) {
+			set_pev(id, pev_viewmodel2, v_xiter_model[i])
+			set_pev(id, pev_weaponmodel2, p_xiter_model[i])
+			break;
+		}
 	}
 	return PLUGIN_HANDLED
 }
@@ -200,12 +215,9 @@ public zp_user_humanized_post(id) {
 	if(!zp_has_round_started())
 		zp_set_custom_game_mod(g_gameid)	// Force Start Xiter Round
 	
-	zp_give_item(id, "weapon_xm1014")
-	zp_give_item(id, "weapon_m3")
-	zp_give_item(id, "weapon_scout")
-	cs_set_user_bpammo(id, CSW_XM1014, 90)
-	cs_set_user_bpammo(id, CSW_M3, 90)
-	cs_set_user_bpammo(id, CSW_SCOUT, 90)
+	static i;
+	for(i = 0; i < MAX_WEAPONS; i++)
+		zp_give_item(id, xiter_weapons[i][wpn_give], 1);
 }
 public fw_PrimaryAttack_Pre(ent) {
 	static id;
