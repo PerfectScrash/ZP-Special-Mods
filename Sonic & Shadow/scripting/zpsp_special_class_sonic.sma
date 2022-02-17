@@ -94,8 +94,8 @@ new const g_chance = 90						// Gamemode chance
 --------------------------------------*/
 new g_gameid, g_msg_sync, cvar_minplayers, g_special_id, cvar_damage, cvar_camera_distance
 new Float:Time1, Float:fAim[3] , Float:User_fVelocity[3][33], Float:Time_Bot[33], Float:Time_skill[33];
-new g_spin_force[33], g_in_dash_attack[33], cvar_attack_damage[3], g_sequence_anim[33], g_boost_gauge[33], g_aim_ent[33]
-new g_homming_target[33], used_homming[33], g_SonicTrail, have_trail[33], bool:g_inthird_person[33], g_shadow_id;
+new g_spin_force[33], g_in_dash_attack[33], cvar_attack_damage[3], g_sequence_anim[33], g_boost_gauge[33], created_aim
+new g_homming_target[33], used_homming[33], g_SonicTrail, have_trail[33], g_pl_cam_ent[33], g_shadow_id;
 
 enum {
 	HOMMING_ATTACK = 1,
@@ -134,8 +134,8 @@ public plugin_init() {
 	register_forward(FM_Touch, "fw_Touch")
 	RegisterHam(Ham_Killed, "player", "fw_PlayerKilled_Post", 1)
 	register_forward(FM_AddToFullPack, "fwd_AddToFullPack", 1);
-	register_event("HLTV", "event_round_start", "a", "1=0", "2=0")
-	register_think(CAMERA_CLASSNAME, "fw_camera_think")
+	register_forward(FM_SetView, "FakeMeta_SetView_Pre", false);
+	RegisterHam(Ham_Think, "trigger_camera", "HamHook_CameraThink_Pre", false);
 	
 	cvar_camera_distance = register_cvar("zp_sonic_cam_distance", "250")
 
@@ -226,6 +226,9 @@ public zp_player_spawn_post(id) {
 	if(IsSonicRound())
 		zp_infect_user(id, 0, 1, 0)
 
+	if(!GetUserSonic(id) && g_pl_cam_ent[id])
+		reset_sonic_vars(id, 1);
+
 	client_cmd(id, "-duck")
 	client_cmd(id, "-duck")
 }
@@ -277,17 +280,6 @@ start_sonic_mode() {
 		zp_infect_user(id, 0, 1, 0) // Turn into a zombie
 	}
 }
-public event_round_start() {
-	static id;
-	for(id = 1; id <= MaxClients; id++) {
-		if(!is_user_connected(id))
-			continue;
-
-		if(g_inthird_person[id]) 
-			reset_sonic_vars(id, 1);
-	}
-}
-
 public zp_user_humanized_post(id) {
 	if(GetUserSonic(id)) 
 	{
@@ -303,11 +295,10 @@ public zp_user_humanized_post(id) {
 			Time_skill[id] = random_float(5.0, 10.0)
 		}
 		else {
-			if(!g_inthird_person[id])
+			if(!g_pl_cam_ent[id])
 				set_cam_ent(id)
-
-			if(!pev_valid(g_aim_ent[id]))
-				create_homming_aim(id)
+			
+			if(!created_aim) create_homming_aim()
 
 			set_task(1.0, "boost_gauge_hud", id+TASK_HUD_BOOST, _, _, "b")
 		}
@@ -315,8 +306,8 @@ public zp_user_humanized_post(id) {
 		client_print_color(id, print_team_default, "%L %L", id, "SONIC_CHAT_PREFIX", id, "YOURE_SONIC")
 		client_print_color(id, print_team_default, "%L %L", id, "SONIC_CHAT_PREFIX", id, "SONIC_INFO")
 	}
-	else if(g_inthird_person[id]) {
-		reset_sonic_vars(id, g_inthird_person[id] ? 1 : 0)
+	else if(g_pl_cam_ent[id]) {
+		reset_sonic_vars(id, g_pl_cam_ent[id] ? 1 : 0)
 	}
 }
 
@@ -327,7 +318,7 @@ public zp_user_infected_post(id) {
 	else reset_sonic_vars(id, 1)
 }
 
-public client_putinserver(id) reset_sonic_vars(id, g_inthird_person[id] ? 1 : 0);
+public client_putinserver(id) reset_sonic_vars(id, g_pl_cam_ent[id] ? 1 : 0);
 
 public client_PreThink(id) {
 	if(!is_user_alive(id))
@@ -507,16 +498,11 @@ public client_PreThink(id) {
 			
 			if(g_homming_target[id]) {
 				client_cmd(id, "spk %s", skill_sounds[SND_HOMMING_AIM])
-				move_homming_aim(id, g_homming_target[id])
-
-				//if(is_user_bot(id)) 
-				//	Time_Bot[id] = get_gametime()
 			}
 		}
 		else if(in_ground) {
 			if(g_homming_target[id]) {
 				g_homming_target[id] = 0
-				move_homming_aim(id, 0)
 			}
 
 			if(used_homming[id])
@@ -619,12 +605,6 @@ public reset_sonic_vars(id, remove_cam) {
 	g_homming_target[id] = 0
 	g_in_dash_attack[id] = 0
 	if(have_trail[id]) remove_trail(id)
-
-	// Rezando pro server nao crashar
-	if(pev_valid(g_aim_ent[id]))
-		remove_entity(g_aim_ent[id])
-
-	g_aim_ent[id] = 0
 }
 
 public fw_Touch(attacker, victim) {
@@ -661,69 +641,138 @@ public fw_Touch(attacker, victim) {
 /*--------------------------------------------------------
 	[Third Person View (Thanks William for his code)]
 ---------------------------------------------------------*/
-public set_cam_ent(id) {
-	new ient = create_entity("trigger_camera")
+public set_cam_ent(iPlayer) {
+	// new ient = create_entity("trigger_camera")
 	
 	//if(!is_valid_ent(ient))
 	//	return
 
-	entity_set_model(ient, CAMERA_MODEL)
-	entity_set_int(ient, CAMERA_OWNER, id)
+	// entity_set_model(ient, CAMERA_MODEL)
+	// entity_set_int(ient, CAMERA_OWNER, id)
+	// entity_set_string(ient, EV_SZ_classname, CAMERA_CLASSNAME)
+	// entity_set_int(ient, EV_INT_solid, SOLID_NOT)
+	// entity_set_int(ient, EV_INT_movetype, MOVETYPE_FLY)
+	// entity_set_int(ient, EV_INT_rendermode, kRenderTransTexture)
+
+	// fm_attach_view(id, ient)
+	// entity_set_float(ient, EV_FL_nextthink, get_gametime() + 0.01)
+
+	if(is_valid_ent(g_pl_cam_ent[iPlayer])) {
+		attach_view(iPlayer, g_pl_cam_ent[iPlayer])
+		return g_pl_cam_ent[iPlayer];
+	}
+
+	new ient = create_entity("trigger_camera");
+	
+	if (!is_valid_ent(ient))
+	{
+		return -1;
+	}
+
+	static iFlags, Float: flMaxSpeed;
+	iFlags = entity_get_int(iPlayer, EV_INT_flags);
+	flMaxSpeed = entity_get_float(iPlayer, EV_FL_maxspeed);
+	
+	set_kvd(0, KV_ClassName, "trigger_camera");
+	set_kvd(0, KV_fHandled, 0);
+	set_kvd(0, KV_KeyName, "wait");
+	set_kvd(0, KV_Value, "999999");
+	dllfunc(DLLFunc_KeyValue, ient, 0);
+	
+	entity_set_int(ient, EV_INT_spawnflags, SF_CAMERA_PLAYER_TARGET|SF_CAMERA_PLAYER_POSITION);
+	entity_set_int(ient, EV_INT_flags, entity_get_int(ient, EV_INT_flags)|FL_ALWAYSTHINK);
+	entity_set_edict(ient, EV_ENT_owner, iPlayer);
+	// entity_set_int(ient, CAMERA_OWNER, id)
 	entity_set_string(ient, EV_SZ_classname, CAMERA_CLASSNAME)
-	entity_set_int(ient, EV_INT_solid, SOLID_NOT)
-	entity_set_int(ient, EV_INT_movetype, MOVETYPE_FLY)
-	entity_set_int(ient, EV_INT_rendermode, kRenderTransTexture)
+	DispatchSpawn(ient);
+	ExecuteHam(Ham_Use, ient, iPlayer, iPlayer, USE_TOGGLE, 1.0);
+	
+	entity_set_int(iPlayer, EV_INT_flags, iFlags);
+	engfunc(EngFunc_SetClientMaxspeed, iPlayer, flMaxSpeed); // depending on mod, you may have to send SetClientMaxspeed here.
+	entity_set_float(iPlayer, EV_FL_maxspeed, flMaxSpeed);
 
-	fm_attach_view(id, ient)
+	g_pl_cam_ent[iPlayer] = ient
+	attach_view(iPlayer, ient)
+	return ient;
 	
-	g_inthird_person[id] = true
 	
-	entity_set_float(ient, EV_FL_nextthink, get_gametime())
 }
-public fw_camera_think(ient) {
-	new iowner = entity_get_int(ient, CAMERA_OWNER)
+
+public HamHook_CameraThink_Pre(iEntity)
+{
+	static ClassName[32];
+	entity_get_string(iEntity, EV_SZ_classname, ClassName, charsmax(ClassName))
+	if(!equal(ClassName, CAMERA_CLASSNAME))
+		return;
+
+	static iPlayer;
+	iPlayer = entity_get_edict(iEntity, EV_ENT_owner);
 	
-	if(!is_user_alive(iowner) || is_user_bot(iowner))
-		return
+	if (!is_user_alive(iPlayer))
+		return;
+
+	if(!GetUserSonic(iPlayer) || !g_pl_cam_ent[iPlayer])
+		return;
+	
+	static Float: vStart[3], Float: vEnd[3], Float: vAngles[3], Float: vBack[3];
+	entity_get_vector(iPlayer, EV_VEC_origin, vStart);
+	entity_get_vector(iPlayer, EV_VEC_view_ofs, vAngles);
+
+	vStart[2] += vAngles[2];
+	
+	entity_get_vector(iPlayer, EV_VEC_v_angle, vAngles);
+
+	angle_vector(vAngles, ANGLEVECTOR_FORWARD, vBack);
+	
+	static Float:CamDistance;
+	CamDistance = get_pcvar_float(cvar_camera_distance)
+	vEnd[0] = vStart[0] + (-vBack[0] * CamDistance);
+	vEnd[1] = vStart[1] + (-vBack[1] * CamDistance);
+	vEnd[2] = vStart[2] + (-vBack[2] * CamDistance);
+	
+	engfunc(EngFunc_TraceLine, vStart, vEnd, IGNORE_MONSTERS, iPlayer, 0);
+	
+	static Float: flFraction;
+	get_tr2(0, TR_flFraction, flFraction);
+	
+	if (flFraction != 1.0 ) {
+		flFraction *= 150.0;
 		
-	if(!is_valid_ent(ient))
-		return
-
-	new Float:fplayerorigin[3], Float:fcameraorigin[3], Float:vangles[3], Float:vback[3]
-
-	entity_get_vector(iowner, EV_VEC_origin, fplayerorigin)
-	entity_get_vector(iowner, EV_VEC_view_ofs, vangles)
-		
-	fplayerorigin[2] += vangles[2];
-			
-	entity_get_vector(iowner, EV_VEC_v_angle, vangles)
-
-	angle_vector(vangles, ANGLEVECTOR_FORWARD, vback)
+		vEnd[0] = vStart[0] + (-vBack[0] * flFraction);
+		vEnd[1] = vStart[1] + (-vBack[1] * flFraction);
+		vEnd[2] = vStart[2] + (-vBack[2] * flFraction);
+	}
 	
-	fcameraorigin[0] = fplayerorigin[0] + (-vback[0] * float(get_pcvar_num(cvar_camera_distance)))
-	fcameraorigin[1] = fplayerorigin[1] + (-vback[1] * float(get_pcvar_num(cvar_camera_distance)))
-	fcameraorigin[2] = fplayerorigin[2] + (-vback[2] * float(get_pcvar_num(cvar_camera_distance)))  
+	entity_set_vector(iEntity, EV_VEC_origin, vEnd);
+	entity_set_vector(iEntity, EV_VEC_angles, vAngles);
+}
 
-	engfunc(EngFunc_TraceLine, fplayerorigin, fcameraorigin, IGNORE_MONSTERS, iowner, 0) 
+public FakeMeta_SetView_Pre(iPlayer, iEntity)
+{
+	if (!is_user_alive(iPlayer))
+		return FMRES_IGNORED;
 	
-	new Float:flFraction; get_tr2(0, TR_flFraction, flFraction)
+	if(!GetUserSonic(iPlayer))
+		return FMRES_IGNORED;
 	
-	if(flFraction != 1.0) {
-		flFraction *= get_pcvar_float(cvar_camera_distance)
+	new iCamera = g_pl_cam_ent[iPlayer];
 	
-		fcameraorigin[0] = fplayerorigin[0] + (-vback[0] * flFraction)
-		fcameraorigin[1] = fplayerorigin[1] + (-vback[1] * flFraction)
-		fcameraorigin[2] = fplayerorigin[2] + (-vback[2] * flFraction)
-	} 
-	
-	entity_set_vector(ient, EV_VEC_origin, fcameraorigin)
-	entity_set_vector(ient, EV_VEC_angles, vangles)
+	if (!iCamera || iEntity == iCamera)
+		return FMRES_IGNORED;
 
-	entity_set_float(ient, EV_FL_nextthink, get_gametime())
+	static szClassname[32];
+	entity_get_string(iEntity, EV_SZ_classname, szClassname, charsmax(szClassname));
+	
+	if (equal(szClassname, "trigger_camera"))
+		return FMRES_IGNORED;
+	
+	engfunc(EngFunc_SetView, iPlayer, iCamera);
+	
+	return FMRES_SUPERCEDE;
 }
 
 public remove_cam_ent(id, attachview) {
-	if(attachview) fm_attach_view(id, id)
+	if(attachview) attach_view(id, id)
 
 	new ient = -1
 	
@@ -731,8 +780,8 @@ public remove_cam_ent(id, attachview) {
 		if(!is_valid_ent(ient))
 			continue
 		
-		if(entity_get_int(ient, CAMERA_OWNER) == id) {
-			g_inthird_person[id] = false
+		if(entity_get_edict(ient, EV_ENT_owner) == id) {
+			g_pl_cam_ent[id] = 0
 			
 			entity_set_int(ient, EV_INT_flags, FL_KILLME)
 			dllfunc(DLLFunc_Think, ient)
@@ -758,7 +807,7 @@ public fwd_AddToFullPack(es_handle, e, id, host, hostflags, player, pSet) {
 	if(is_user_connected(id))
 		return FMRES_IGNORED;
 
-	if(!is_user_alive(g_homming_target[host]) || g_aim_ent[host] != id || !pev_valid(id))
+	if(!is_user_alive(g_homming_target[host]) || !pev_valid(id))
 		return FMRES_IGNORED;
 
 	if(!GetUserSonic(host) || !zp_get_user_zombie(g_homming_target[host]) || used_homming[host])
@@ -770,18 +819,12 @@ public fwd_AddToFullPack(es_handle, e, id, host, hostflags, player, pSet) {
 	static szClassname[32]; 
 	pev(id, pev_classname, szClassname, charsmax(szClassname))
 	if(equal(szClassname, HOMMING_AIM_CLASSNAME)) {
-		if(pev(id, pev_owner) == host) {
-			set_es(es_handle, ES_RenderFx, kRenderFxGlowShell);
-			set_es(es_handle, ES_RenderColor, { 0, 255, 0 });
-			set_es(es_handle, ES_RenderMode, kRenderGlow);
-			set_es(es_handle, ES_RenderAmt, 40);
-		}
-		/*else {
-			set_es(es_handle, ES_RenderFx, kRenderFxGlowShell);
-			set_es(es_handle, ES_RenderColor, { 0, 0, 0 });
-			set_es(es_handle, ES_RenderMode, kRenderTransAdd);
-			set_es(es_handle, ES_RenderAmt, 0);
-		}*/
+		set_es(es_handle, ES_MoveType, MOVETYPE_FOLLOW)
+		set_es(es_handle, ES_AimEnt, g_homming_target[host])
+		set_es(es_handle, ES_RenderFx, kRenderFxGlowShell);
+		set_es(es_handle, ES_RenderColor, { 0, 255, 0 });
+		set_es(es_handle, ES_RenderMode, kRenderGlow);
+		set_es(es_handle, ES_RenderAmt, 40);
 	}
 	return FMRES_HANDLED;
 } 
@@ -790,7 +833,7 @@ public fw_PlayerKilled_Post(victim, attacker) {
 	if(!is_user_connected(victim))
 		return HAM_IGNORED;
 
-	if(GetUserSonic(victim) && g_inthird_person[victim])
+	if(GetUserSonic(victim) && g_pl_cam_ent[victim])
 		reset_sonic_vars(victim, 1)
 
 	if(!is_user_connected(attacker))
@@ -1037,13 +1080,7 @@ remove_trail(id) {
 	have_trail[id] = false
 }
 
-public create_homming_aim(id) {
-	if(!is_user_alive(id))
-		return;
-
-	if(!GetUserSonic(id) || is_user_bot(id) || zp_get_user_zombie(id))
-		return;
-
+public create_homming_aim() {
 	new ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"))
 
 	set_pev(ent, pev_classname, HOMMING_AIM_CLASSNAME)
@@ -1051,7 +1088,6 @@ public create_homming_aim(id) {
 	set_pev(ent, pev_movetype, MOVETYPE_FOLLOW)
 	set_pev(ent, pev_solid, SOLID_NOT)
 	set_pev(ent, pev_aiment, 0)
-	set_pev(ent, pev_owner, id)
 	//set_pev(ent, pev_rendermode, kRenderNormal)
 	set_pev(ent, pev_sequence, 0)
 	//set_pev(ent, pev_animtime, get_gametime())
@@ -1060,24 +1096,6 @@ public create_homming_aim(id) {
 	// Invisible
 	fm_set_rendering(ent, kRenderFxGlowShell, 0, 0, 0, kRenderTransAdd, 0)
 
-	g_aim_ent[id] = ent
+	created_aim = true
 }
 
-public move_homming_aim(attacker, victim) {
-	if(!is_user_alive(attacker))// || !is_user_alive(victim))
-		return;
-
-	if(!GetUserSonic(attacker) || is_user_bot(attacker)) //|| !zp_get_user_zombie(victim) && attacker != victim)
-		return;
-
-	if(!pev_valid(g_aim_ent[attacker]))
-		return;
-
-	static szClassname[32]; pev(g_aim_ent[attacker], pev_classname, szClassname, charsmax(szClassname))
-
-	if(equal(szClassname, HOMMING_AIM_CLASSNAME)) {
-		set_pev(g_aim_ent[attacker], pev_aiment, victim)
-		//set_pev(g_aim_ent[attacker], pev_owner, victim)
-	}
-
-}
