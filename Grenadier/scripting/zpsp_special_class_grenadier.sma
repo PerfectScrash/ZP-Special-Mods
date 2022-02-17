@@ -99,7 +99,6 @@ public plugin_init() {
 	cvar_flaregrenades = get_cvar_pointer("zp_flare_grenades")
 	
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
-	register_event("CurWeapon", "checkModel", "be", "1=1")
 	RegisterHam(Ham_Think, "grenade", "fw_ThinkGrenade")
 	register_forward(FM_SetModel, "fw_SetModel")	
 	
@@ -250,24 +249,22 @@ public zp_extra_item_selected_pre(id, itemid) {
 }
 
 // Weapon Model
-public checkModel(id) {
+public zp_fw_deploy_weapon(id, wpnid) {
 	if(!is_user_alive(id))
-		return PLUGIN_HANDLED
+		return PLUGIN_CONTINUE
 	
 	if(zp_get_user_zombie(id) || !GetUserGrenadier(id))
-		return PLUGIN_HANDLED;
-	
-	static userWpn;
-	userWpn = get_user_weapon(id)
-	if(userWpn == CSW_KNIFE) {
+		return PLUGIN_CONTINUE;
+
+	if(wpnid == CSW_KNIFE) {
 		set_pev(id, pev_viewmodel2, v_knife_model)
 		set_pev(id, pev_weaponmodel2, p_knife_model)
 	}
-	if(userWpn == CSW_SMOKEGRENADE) {
+	if(wpnid == CSW_SMOKEGRENADE) {
 		set_pev(id, pev_viewmodel2, v_kill_model)
 		set_pev(id, pev_weaponmodel2, p_kill_model)
 	}
-	return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 // Knife Damage

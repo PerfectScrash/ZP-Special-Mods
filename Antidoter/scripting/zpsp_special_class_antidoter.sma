@@ -101,8 +101,6 @@ public plugin_init() {
 	cvar_damage_knife = register_cvar("zp_antidoter_knife_damage", "1000") 
 
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
-	RegisterHam(Ham_Item_Deploy, "weapon_m4a1", "SetWeaponModel", 1);
-	RegisterHam(Ham_Item_Deploy, "weapon_knife", "SetWeaponModel", 1);
 	RegisterHam(Ham_Weapon_Reload, "weapon_m4a1", "fw_Reload_Post", 1);
 	RegisterHam(Ham_Weapon_PrimaryAttack, "weapon_m4a1", "fw_PrimaryAttack_Post", 1);
 	register_forward(FM_PlaybackEvent, "fwPlaybackEvent")
@@ -201,8 +199,7 @@ public zp_user_humanized_post(id) {
 	if(!zp_has_round_started())
 		zp_set_custom_game_mod(g_gameid) // Force Start Antidoter Round
 	
-	zp_give_item(id, "weapon_m4a1")
-	cs_set_user_bpammo(id, CSW_M4A1, 90)
+	zp_give_item(id, "weapon_m4a1", 1)
 }
 public fw_UpdateClientData_Post(Player, SendWeapons, CD_Handle) {
 	if(!is_user_alive(Player))
@@ -309,21 +306,12 @@ public fw_Reload_Post(weapon_entity) {
 	return HAM_IGNORED;
 }
 
-public SetWeaponModel(weapon_entity) {
-	if (!pev_valid(weapon_entity))
-		return HAM_IGNORED;
-
-	static id;
-	id = get_pdata_cbase(weapon_entity, OFFSET_WEAPONOWNER, OFFSET_LINUX_WEAPONS);
-
+public zp_fw_deploy_weapon(id, user_wpn) {
 	if (!is_user_alive(id))
 		return HAM_IGNORED;
 
 	if(zp_get_user_zombie(id) || !GetUserAntidoter(id))
 		return HAM_IGNORED
-	
-	static user_wpn;
-	user_wpn = cs_get_weapon_id(weapon_entity)
 
 	if(user_wpn == CSW_M4A1)  {
 		set_pev(id, pev_viewmodel2, v_m4a1_model)

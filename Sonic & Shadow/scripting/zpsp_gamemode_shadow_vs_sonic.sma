@@ -126,11 +126,11 @@ public zp_player_spawn_post(id) {
 	// Check if the player is a zombie
 	if(zp_get_user_zombie(id)) {
 		zp_make_user_shadow(id) // Make him an shadow instead
-		set_user_health(id, floatround(get_user_health(id) * get_pcvar_float(cvar_shadowhp))) // Set his health
+		set_user_health(id, get_pcvar_num(cvar_shadowhp)) // Set his health
 	}
 	else {
 		zp_make_user_sonic(id) // Make him a sonic
-		set_user_health(id, floatround(get_user_health(id) * get_pcvar_float(cvar_sonichp))) // Set his health
+		set_user_health(id, get_pcvar_num(cvar_sonichp)) // Set his health
 	}
 }
 public zp_game_mode_selected_pre(id, game) {
@@ -187,7 +187,7 @@ start_svs_mode() {
 			continue;
 
 		zp_make_user_shadow(id) // Make user shadow
-		set_user_health(id, floatround(get_user_health(id) * get_pcvar_float(cvar_shadowhp))) // Set his health
+		set_user_health(id, get_pcvar_num(cvar_shadowhp)) // Set his health
 		i_shadows++ // Increase counter
 	}
 
@@ -200,7 +200,7 @@ start_svs_mode() {
 			continue;
 
 		zp_make_user_sonic(id) // Turn into a sonic
-		set_user_health(id, floatround(get_user_health(id) * get_pcvar_float(cvar_sonichp))) // Set his health
+		set_user_health(id, get_pcvar_num(cvar_sonichp)) // Set his health
 	}
 
 	// Show HUD notice

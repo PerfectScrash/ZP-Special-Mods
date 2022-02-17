@@ -103,7 +103,6 @@ public plugin_init() {
 	cvar_flaregrenades = get_cvar_pointer("zp_flare_grenades")
 	
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
-	register_event("CurWeapon","checkModel","be","1=1")
 	RegisterHam(Ham_Think, "grenade", "fw_ThinkGrenade")
 	register_forward(FM_SetModel, "fw_SetModel")	
 
@@ -244,15 +243,13 @@ start_priest_mode() {
 /*-------------------------------------
 --> Class functions
 --------------------------------------*/
-public checkModel(id) {
+public zp_fw_deploy_weapon(id, userWpn) {
 	if (!is_user_alive(id))
 		return PLUGIN_HANDLED;
 	
 	if(!GetUserPriest(id)) 
 		return PLUGIN_HANDLED;
 	
-	static userWpn;
-	userWpn = get_user_weapon(id)
 	if (userWpn == CSW_KNIFE) {
 		set_pev(id, pev_viewmodel2, v_knife_model)
 		set_pev(id, pev_weaponmodel2, p_knife_model)

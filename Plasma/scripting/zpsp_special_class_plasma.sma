@@ -129,8 +129,6 @@ public plugin_init() {
 	
 	cvar_minplayers = register_cvar("zp_plasma_minplayers", "2")
 
-	register_event("CurWeapon","checkModel","be","1=1")
-	
 	register_forward(FM_CmdStart, "fw_CmdStart")
 	register_forward(FM_UpdateClientData, "fw_UpdateClientData_Post", 1)
 	
@@ -274,15 +272,15 @@ public zp_extra_item_selected_pre(id, itemid) {
 }
 
 // Weapon Model
-public checkModel(id) {
+public zp_fw_deploy_weapon(id, wpnid) {
 	if (!is_user_alive(id))
 		return PLUGIN_HANDLED;
 	
 	if(!GetUserPlasma(id))
 		return PLUGIN_HANDLED;
 
-	g_iCurWpn[id] = read_data(2)
-	if (g_iCurWpn[id] == CSW_FAMAS) {		
+	g_iCurWpn[id] = wpnid
+	if (wpnid == CSW_FAMAS) {		
 		set_pev(id, pev_viewmodel2, v_famas_model)
 		set_pev(id, pev_weaponmodel2, p_famas_model)
 	}
@@ -296,8 +294,7 @@ public zp_user_humanized_post(id) {
 	if(!zp_has_round_started())
 		zp_set_custom_game_mod(g_gameid)
 	
-	fm_give_item(id, "weapon_famas")
-	cs_set_user_bpammo(id, CSW_FAMAS, 90)
+	zp_give_item(id, "weapon_famas", 1)
 }
 	
 public fw_CmdStart(id, handle, seed) {

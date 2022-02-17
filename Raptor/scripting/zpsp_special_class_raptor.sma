@@ -130,7 +130,7 @@ public plugin_precache() {
 		amx_save_setting_string(ZP_SPECIAL_CLASSES_FILE, fmt("Z:%s", sp_name), "RAPTOR SPRINT SOUND", def_sound_raptor_sprint)
 		formatex(sound_raptor_sprint, charsmax(sound_raptor_sprint), def_sound_raptor_sprint)
 	}
-	precache_model(sound_raptor_sprint)
+	precache_sound(sound_raptor_sprint)
 	gRaptorTrail = precache_model("sprites/smoke.spr")
 
 	static i

@@ -87,7 +87,6 @@ public plugin_init() {
 	cvar_tag_ap_winner = register_cvar("zp_tag_mode_winner_ap", "50")
 
 	// Events
-	register_event("CurWeapon","CurrentWeapon","be","1=1")
 	RegisterHam(Ham_TraceAttack, "player", "fw_TraceAttack")
 	
 	// Hud stuff
@@ -293,11 +292,11 @@ public explode_zombies() {
 }
 
 // Knifes Only in Tag Mode
-public CurrentWeapon(id) {
+public zp_fw_deploy_weapon(id, wpnid) {
 	if (!is_user_alive(id) || !IsTagRound())
 		return PLUGIN_HANDLED;
 	
-	if (get_user_weapon(id) != CSW_KNIFE && !zp_get_user_zombie(id))
+	if (wpnid != CSW_KNIFE && !zp_get_user_zombie(id))
 		engclient_cmd(id, "weapon_knife")
 	
 	return PLUGIN_HANDLED

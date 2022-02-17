@@ -143,7 +143,6 @@ public plugin_init() {
 
 	register_event("HLTV", "cache_cvars", "a", "1=0", "2=0")
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
-	register_event("CurWeapon", "checkModel", "be", "1=1")
 
 	register_think(chibaku_tensei_class, "fw_ChibakuThink")
 	register_touch("player", "*", "player_touch")
@@ -305,18 +304,18 @@ start_pain_mode() {
 /*-------------------------------------
 --> Class Functions/Skills
 --------------------------------------*/
-public checkModel(id) {
+public zp_fw_deploy_weapon(id, wpnid) {
 	if(!is_user_alive(id))
-		return PLUGIN_HANDLED;
+		return PLUGIN_CONTINUE;
 
 	if(!GetUserPain(id))
-		return PLUGIN_HANDLED;
+		return PLUGIN_CONTINUE;
 	
-	if(get_user_weapon(id) == CSW_KNIFE) {
+	if(wpnid == CSW_KNIFE) {
 		entity_set_string(id, EV_SZ_viewmodel, v_knife_model)
 		entity_set_string(id, EV_SZ_weaponmodel, p_knife_model)
 	}
-	return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 // Kunai Damage

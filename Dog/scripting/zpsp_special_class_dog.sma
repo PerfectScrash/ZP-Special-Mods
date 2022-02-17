@@ -104,7 +104,6 @@ public plugin_init() {
 	
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
 	RegisterHam(Ham_Killed, "player", "fw_PlayerKilled")
-	register_event("CurWeapon","CurrentWeapon","be","1=1")
 	register_forward(FM_PlayerPreThink, "fw_PlayerPreThink")
 	
 	g_msg_sync = CreateHudSyncObj()
@@ -233,11 +232,11 @@ public zp_extra_item_selected_pre(id, itemid) {
 }
 
 // Knifes Only in Dog Round
-public CurrentWeapon(id) {
+public zp_fw_deploy_weapon(id, wpnid) {
 	if(!is_user_alive(id) || !IsDogMode())
 		return PLUGIN_HANDLED;
 	
-	if(get_user_weapon(id) != CSW_KNIFE && !zp_get_user_zombie(id))
+	if(wpnid != CSW_KNIFE && !zp_get_user_zombie(id))
 		engclient_cmd(id, "weapon_knife")
 	
 	return PLUGIN_HANDLED

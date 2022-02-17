@@ -107,7 +107,6 @@ public plugin_init() {
 	
 	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
 	RegisterHam(Ham_TraceAttack, "player", "fw_TraceAttack")
-	register_event("CurWeapon","checkModel","be","1=1")
 	
 	g_msg_sync[0] = CreateHudSyncObj()
 	g_msg_sync[1] = CreateHudSyncObj()
@@ -251,14 +250,14 @@ public zp_extra_item_selected_pre(id, itemid) {
 }
 
 // Knife Model
-public checkModel(id) {
+public zp_fw_deploy_weapon(id, wpnid) {
 	if (!is_user_alive(id))
 		return PLUGIN_HANDLED
 	
 	if(zp_get_user_zombie(id) || !GetUserChuck(id))
 		return PLUGIN_HANDLED;
 	
-	if(get_user_weapon(id) == CSW_KNIFE) {
+	if(wpnid == CSW_KNIFE) {
 		set_pev(id, pev_viewmodel2, v_knife_model)
 		set_pev(id, pev_weaponmodel2, p_knife_model)
 	}
