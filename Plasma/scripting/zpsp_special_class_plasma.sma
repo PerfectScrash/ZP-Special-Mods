@@ -264,13 +264,6 @@ start_plasma_mode() {
 /*-------------------------------------
 --> Class Functions
 --------------------------------------*/
-public zp_extra_item_selected_pre(id, itemid) {
-	if(GetUserPlasma(id))
-		return ZP_PLUGIN_SUPERCEDE
-	
-	return PLUGIN_CONTINUE
-}
-
 // Weapon Model
 public zp_fw_deploy_weapon(id, wpnid) {
 	if (!is_user_alive(id))

@@ -225,7 +225,7 @@ public unduck_player(id) {
 --> Gamemode Functions
 --------------------------------------*/
 public zp_extra_item_selected_pre(id, itemid) {
-	if(GetUserDog(id) || IsDogMode())
+	if(!GetUserDog(id) && IsDogMode())
 		return ZP_PLUGIN_SUPERCEDE
 	
 	return PLUGIN_CONTINUE
