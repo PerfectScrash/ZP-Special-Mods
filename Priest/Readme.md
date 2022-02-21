@@ -16,10 +16,6 @@
     - Added p_model
 
   * 1.2:
-    - Fixed Zombie health (Some times zombies have same health as first zombie)
-    - Fixed Bug that player sometimes don't turn into plasma when round starts
-  
-  * 1.3:
     - ZPSp 4.5 Support
     - Added P_ and W_ model support for antidote bomb
     

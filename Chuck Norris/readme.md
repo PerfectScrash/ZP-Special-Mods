@@ -17,8 +17,4 @@
   - Added More messages
 
 * 1.2:
-  - Fixed Zombie health (Some times zombies have same health as first zombie)
-  - Fixed Bug that player sometimes don't turn into plasma when round starts
-
-* 1.3:
   - Added Support for ZPSp 4.5
