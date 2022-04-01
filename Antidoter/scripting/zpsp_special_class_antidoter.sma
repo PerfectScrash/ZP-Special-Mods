@@ -296,7 +296,7 @@ public fw_Reload_Post(weapon_entity) {
 		return HAM_IGNORED;
 
 	if(!GetUserAntidoter(id) || zp_get_user_zombie(id))
-		return FMRES_IGNORED;
+		return HAM_IGNORED;
 
 	if(get_user_weapon(id) != CSW_M4A1)
 		return HAM_IGNORED
