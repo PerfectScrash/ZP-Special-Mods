@@ -13,6 +13,14 @@ TAG_START = Tag Mode !!!
 TAG_EXPLODES = -= TAG MODE =-^n-= Zombies Will Explode in =- ^n***NOW***
 TAG_COUNTDOWN = -= TAG MODE =-^n-= Zombies Will Explode in %d Second(s) =-^n[%s]
 
+HOTPOTATO_PREFIX = ^4[ZP Hot Potato Mode]^1
+HOTPOTATO_MODNAME = Hot potato Mode
+HOTPOTATO_WINNER = The Winner of ^3Hot Potato Mode^1 are is ^3'%s'^1 and won ^3%d Ammopacks ^1!!!
+HOTPOTATO_CHOOSED = Are choosed ^3%d Zombie(s)^1 for this this stage ^4-|-^1 Time for end a current stage: ^3%d Second(s)
+HOTPOTATO_START = Hot Potato Mode !!!
+HOTPOTATO_EXPLODES = -= HOT POTATO MODE =-^n-= Zombies Will Explode in =- ^n***NOW***
+HOTPOTATO_COUNTDOWN = -= HOT POTATO MODE =-^n-= Zombies Will Explode in %d Second(s) =-^n[%s]
+
 GRAVITY_MODNAME = Gravity
 GRAVITY_START = Gravity Mode !!!
 DM_MODNAME = Deathmatch
@@ -27,11 +35,19 @@ CANNIBAL_EVOLUTION = O Jogador ^3%s^1 devorou ^3%d Zumbi(s)^1 e evoluiu a ^3Neme
 
 TAG_PREFIX = ^4[ZP Tag Mode]^1
 TAG_MODNAME = Tag Mode
-TAG_WINNER = O Vencedor do ^3Tag Mode^1 eh o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
+TAG_WINNER = O Vencedor do ^3Tag Mode^1 é o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
 TAG_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
 TAG_START = Tag Mode !!!
 TAG_EXPLODES = -= TAG MODE =-^n-= Zombies iram explodir =- ^n***AGORA***
 TAG_COUNTDOWN = -= TAG MODE =-^n-= Zombies iram explodir em %d Segundo(s) =-^n[%s]
+
+HOTPOTATO_PREFIX = ^4[ZP Batata Quente]^1
+HOTPOTATO_MODNAME = Batata Quente
+HOTPOTATO_WINNER = O Vencedor da ^3Batata quente^1 é o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
+HOTPOTATO_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
+HOTPOTATO_START = Modo Batata Quente !!!
+HOTPOTATO_EXPLODES = -=| BATATA QUENTE |=-^n-= Zombies iram explodir =- ^n***AGORA***
+HOTPOTATO_COUNTDOWN = -=| BATATA QUENTE |=-^n-= Zombies iram explodir em %d Segundo(s) =-^n[%s]
 
 GRAVITY_MODNAME = Baixa Gravidade
 GRAVITY_START = Modo Baixa Gravidade !!!
@@ -47,11 +63,19 @@ CANNIBAL_EVOLUTION = O Jogador ^3%s^1 devorou ^3%d Zumbi(s)^1 e evoluiu a ^3Neme
 
 TAG_PREFIX = ^4[ZP Pega pega]^1
 TAG_MODNAME = Modo Pega Pega
-TAG_WINNER = O Vencedor do ^3Pega pega^1 eh o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
+TAG_WINNER = O Vencedor do ^3Pega pega^1 é o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
 TAG_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
 TAG_START = Modo Pega Pega !!!
 TAG_EXPLODES = -= PEGA PEGA =-^n-= Zumbis iram explodir =- ^n***AGORA***
 TAG_COUNTDOWN = -= PEGA PEGA =-^n-= Zumbis iram explodir em %d Segundo(s) =-^n[%s]
+
+HOTPOTATO_PREFIX = ^4[ZP Batata Quente]^1
+HOTPOTATO_MODNAME = Batata Quente
+HOTPOTATO_WINNER = O Vencedor da ^3Batata quente^1 é o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
+HOTPOTATO_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
+HOTPOTATO_START = Modo Batata Quente !!!
+HOTPOTATO_EXPLODES = -=| BATATA QUENTE |=-^n-= Zumbis iram explodir =- ^n***AGORA***
+HOTPOTATO_COUNTDOWN = -=| BATATA QUENTE |=-^n-= Zumbis iram explodir em %d Segundo(s) =-^n[%s]
 
 GRAVITY_MODNAME = Baixa Gravidade
 GRAVITY_START = Modo Baixa Gravidade !!!
