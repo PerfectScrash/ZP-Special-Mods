@@ -26,6 +26,9 @@ GRAVITY_START = Gravity Mode !!!
 DM_MODNAME = Deathmatch
 DM_START = Deathmatch Mode !!!
 
+NEM_XTREME_MODNAME = Nemesis-Xtreme
+NEM_XTREME_START = Nemesis-Xtreme Mode !!!!!
+
 [bp]
 CANNIBAL_PREFIX = ^4[ZP Cannibal Mode]^1
 CANNIBAL_MODNAME = Cannibal
@@ -54,6 +57,9 @@ GRAVITY_START = Modo Baixa Gravidade !!!
 DM_MODNAME = Deathmatch
 DM_START = Modo Deathmatch !!!
 
+NEM_XTREME_MODNAME = Nemesis-Extremo
+NEM_XTREME_START = Nemesis-Extremo !!!!!
+
 [pt]
 CANNIBAL_PREFIX = ^4[ZP Cannibal Mode]^1
 CANNIBAL_MODNAME = Cannibal
@@ -81,3 +87,37 @@ GRAVITY_MODNAME = Baixa Gravidade
 GRAVITY_START = Modo Baixa Gravidade !!!
 DM_MODNAME = Rodada da morte
 DM_START = Modo Rodada da morte !!!
+
+NEM_XTREME_MODNAME = Nemesis-Extremo
+NEM_XTREME_START = Nemesis-Extremo !!!!!
+
+[es]
+CANNIBAL_PREFIX = ^4[ZP Modo Cannibal]^1
+CANNIBAL_MODNAME = Cannibal
+CANNIBAL_START = Cannibal !!!
+CANNIBAL_WINNER = El jugador ^3'%s'^1 Fue el devorador supremo y ganó ^3%d Ammopack(s)
+CANNIBAL_EVOLUTION = El jugador ^3%s^1 devoraste ^3%d Zumbi(s)^1 y evolucionó el ^3Nemesis^4 !!!
+
+TAG_PREFIX = ^4[ZP Modo Tag]^1
+TAG_MODNAME = Modo Tag
+TAG_WINNER = El vencedor del ^3Modo Tag^1 eres el jugador ^3'%s'^1 y ganó ^3%d Ammopacks ^1!!!
+TAG_CHOOSED = Han sido elegidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tiempo para terminar el paso actual: ^3%d Segundo(s)
+TAG_START = Modo Tag!!!
+TAG_EXPLODES = -= MODO TAG=-^n-= Los zombis explotarán  =- ^n***AHORA***
+TAG_COUNTDOWN = -= MODO TAG=-^n-= Los zombis explotarán en %d Segundo(s) =-^n[%s]
+
+HOTPOTATO_PREFIX = ^4[ZP Patata caliente]^1
+HOTPOTATO_MODNAME = Patata caliente
+HOTPOTATO_WINNER = O Vencedor da ^3Patata caliente^1 é el jugador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
+HOTPOTATO_CHOOSED = Han sido elegido ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tiempo para terminar el paso actual: ^3%d Segundo(s)
+HOTPOTATO_START = Modo Patata caliente !!!
+HOTPOTATO_EXPLODES = -=| PATATA CALIENTE |=-^n-= Los zombis explotarán =- ^n***AHORA***
+HOTPOTATO_COUNTDOWN = -=| PATATA CALIENTE |=-^n-= Los zombis explotarán en %d Segundo(s) =-^n[%s]
+
+GRAVITY_MODNAME = Gravedad baja
+GRAVITY_START = Modo Gravedad baja !!!
+DM_MODNAME = Deathmatch
+DM_START = Modo Deathmatch !!!
+
+NEM_XTREME_MODNAME = Nemesis-Extremo
+NEM_XTREME_START = Nemesis-Extremo !!!!!
