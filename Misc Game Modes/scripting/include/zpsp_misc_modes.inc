@@ -34,3 +34,10 @@ native zp_is_gravity_round();
  * @return		True if it is, false otherwise.
  */
 native zp_is_deathmatch_round();
+
+/**
+ * Returns whether the current round is a nemesis xtreme round.
+ *
+ * @return		True if it is, false otherwise.
+ */
+native zp_is_nem_xtreme_round();
