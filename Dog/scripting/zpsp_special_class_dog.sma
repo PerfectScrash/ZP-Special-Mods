@@ -21,6 +21,8 @@
 			* 1.2:
 				- ZPSp 4.5 Full support
 
+			* 1.3:
+				- Fix Server crashes when use "engclient_cmd" in bots
 
 */
 
@@ -236,8 +238,14 @@ public zp_fw_deploy_weapon(id, wpnid) {
 	if(!is_user_alive(id) || !IsDogMode())
 		return PLUGIN_HANDLED;
 	
-	if(wpnid != CSW_KNIFE && !zp_get_user_zombie(id))
-		engclient_cmd(id, "weapon_knife")
+	if (wpnid != CSW_KNIFE && !zp_get_user_zombie(id)) {
+		if(is_user_bot(id)) {
+			zp_strip_user_weapons(id)
+			zp_give_item(id, "weapon_knife")
+		}
+		else
+			engclient_cmd(id, "weapon_knife")
+	}
 	
 	return PLUGIN_HANDLED
 }
@@ -279,14 +287,21 @@ start_dog_mode() {
 		if(!is_user_alive(i))
 			continue
 	
-		if(!GetUserDog(i))
-			continue
+		if(!GetUserDog(i)) {
+			if(is_user_bot(i)) {
+				zp_strip_user_weapons(i)
+				zp_give_item(i, "weapon_knife")
+			}
+			else
+				engclient_cmd(i, "weapon_knife")
+
+			continue;
+		}
 		
 		id = i	// Get Dog Index
 		has_dog = true
 		break;
 	}
-
 	if(!has_dog) {
 		id = zp_get_random_player()
 		zp_make_user_special(id, g_special_id, GET_ZOMBIE)
@@ -297,7 +312,6 @@ start_dog_mode() {
 	ShowSyncHudMsg(0, g_msg_sync, "%s is a %s", name, sp_name)
 
 	ScreenFade(0, 5, sp_color_rgb, 255)
-	engclient_cmd(0, "weapon_knife")
 }
 
 /*-------------------------------------

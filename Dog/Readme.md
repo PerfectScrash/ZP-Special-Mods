@@ -15,4 +15,10 @@
 		- Optimized Code
 		- 20/12 Fix: Fixed Error log on "event_round_started"
 
+	* 1.2:
+		- ZPSp 4.5 Full support
+
+	* 1.3:
+		- Fix Server crashes when use "engclient_cmd" in bots
+
 ### Download Resources: https://github.com/PerfectScrash/ZP-Special-Mods/raw/master/Dog/resources.zip

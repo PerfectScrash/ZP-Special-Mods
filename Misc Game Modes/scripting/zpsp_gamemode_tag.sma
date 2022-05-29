@@ -27,6 +27,15 @@
 	- zp_tag_mode_winner_ap 50
 		- Reward for winner of tag mode
 		  	
+	-------------------
+	 *||Change Log||*
+	-------------------
+	* 1.0:
+		- First Releaase
+
+	* 1.1:
+		- Fix Server crashes when use "engclient_cmd" in bots
+
 \***************************************************************************/
 
 #include <amxmodx>
@@ -79,7 +88,7 @@ new Array:g_sound_tension, g_tension_enable
 
 //------------------[Plugin Register]---------------------
 public plugin_init() {
-	register_plugin("[ZPSp] Game mode: Tag Mode","1.0", "[P]erfec[T] [S]cr[@]s[H]")
+	register_plugin("[ZPSp] Game mode: Tag Mode", "1.1", "[P]erfec[T] [S]cr[@]s[H]")
 	register_dictionary("zpsp_misc_modes.txt")
 	
 	// Cvars
@@ -167,18 +176,29 @@ public zp_round_started_pre(game) {
 }
 
 // Round Start
-public zp_round_started(game, id) {
+public zp_round_started(game) {
 	// Check if it is our game mode
 	if(game != g_gameid)
 		return;
 	
+	for(new id = 0; id <= MaxClients; id++) {
+		if(!is_user_alive(id))
+			continue;
+
+		if(is_user_bot(id)) {
+			zp_strip_user_weapons(id)
+			zp_give_item(id, "weapon_knife")
+		}
+		else
+			engclient_cmd(id, "weapon_knife")
+	}
+
 	// Show HUD notice
 	set_hudmessage(221, 156, 21, -1.0, 0.17, 1, 0.0, 5.0, 1.0, 1.0, -1)
 	ShowSyncHudMsg(0, g_msg_sync, "%L", LANG_PLAYER, "TAG_START")
 
 	set_task(0.1, "Tag_Select", TASK_SELECT);
 	server_cmd("mp_round_infinite abf");
-	engclient_cmd(0, "weapon_knife")
 }
 
 // End Round
@@ -296,8 +316,14 @@ public zp_fw_deploy_weapon(id, wpnid) {
 	if (!is_user_alive(id) || !IsTagRound())
 		return PLUGIN_HANDLED;
 	
-	if (wpnid != CSW_KNIFE && !zp_get_user_zombie(id))
-		engclient_cmd(id, "weapon_knife")
+	if (wpnid != CSW_KNIFE && !zp_get_user_zombie(id)) {
+		if(is_user_bot(id)) {
+			zp_strip_user_weapons(id)
+			zp_give_item(id, "weapon_knife")
+		}
+		else
+			engclient_cmd(id, "weapon_knife")
+	}
 	
 	return PLUGIN_HANDLED
 }
