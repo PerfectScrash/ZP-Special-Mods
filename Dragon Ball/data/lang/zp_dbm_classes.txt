@@ -1,0 +1,127 @@
+[en]
+START_DBM = Dragon Ball Mode !!!
+DBM_MODENANE = Dragon Ball
+
+AN_A_GOKU = %s an a Goku
+GOKU_CLASS_NAME = Goku
+GOKU_INFO = ^4[ZP DBM]^3 You're a Goku ^1||^3 Press ^4[E]^3 Button for use his powers ^1(When available)
+GOKU_NO_ENERGY = ^4[Goku]^3 You don't have engout energy.
+GOKU_ONCE_POWER = ^4[Goku]^3 One power by time.
+GOKU_ATK1 = ^4[Goku]^3 Ki Blast ^1!!!!
+GOKU_ATK2 = ^4[Goku]^3 Kamehameha ^1!!!!
+GOKU_ATK3 = ^4[Goku]^3 Dragon First ^1!!!!
+GOKU_ATK4 = ^4[Goku]^3 10x Kamehameha ^1!!!!
+GOKU_ATK5 = ^4[Goku]^3 Spirit Bomb ^1!!!!
+GOKU_HUD = [Energy: %d]^n[Saiyan Level: %d]
+GOKU_TURN_INTO_SSJ_ALL = %s has turned into Super Saiyan %d
+GOKU_TURN_INTO_SSJ = You are turned into Super Saiyan %d
+
+AN_A_FRIEZA = %s an a Frieza
+FRIEZA_CLASS_NAME = Frieza
+FRIEZA_INFO = ^4[ZP DBM]^3 You're a Frieza ^1||^3 Press ^4[E]^3 Button for use his powers ^1(When available)
+FRIEZA_POWER_ENABLE = ^4[Frieza]^3 You can use his powers again.
+FRIEZA_WAIT = ^4[Frieza]^3 Wait some seconds for use his powers.
+FRIEZA_ONCE_POWER = ^4[Frieza]^3 One power by time.
+
+KRILLIN_CLASS_NAME = Krillin
+AN_A_KRILLIN = %s an a Krillin
+KRILLIN_INFO = ^4[ZP DBM]^3 You're a Krillin ^1||^3 Hold ^4[E]^3 Button for use his powers
+KRILLIN_WAIT = ^4[Krilin]^3 Wait some seconds for use his powers.
+KRILLIN_ONCE_POWER = ^4[Krilin]^3 One power by time.
+KRILLIN_SKILL_ENABLE = ^4[Krilin]^3 You can use his powers again.
+
+[bp]
+START_DBM = Modo Dragon Ball !!!
+DBM_MODENANE = Dragon Ball
+
+AN_A_GOKU = %s Eh o Goku
+GOKU_CLASS_NAME = Goku
+GOKU_INFO = ^4[ZP DBM]^3 Voce eh o Goku ^1||^3 Pressione ^4[E]^3 Para soltar o Poder ^1(Quando Disponivel)
+GOKU_NO_ENERGY = ^4[Goku]^3 Voce Nao Tem Energia Suficiente.
+GOKU_ONCE_POWER = ^4[Goku]^3 So um poder por vez.
+GOKU_ATK1 = ^4[Goku]^3 Ki Blast ^1!!!!
+GOKU_ATK2 = ^4[Goku]^3 Kamehameha ^1!!!!
+GOKU_ATK3 = ^4[Goku]^3 Dragon First ^1!!!!
+GOKU_ATK4 = ^4[Goku]^3 10x Kamehameha ^1!!!!
+GOKU_ATK5 = ^4[Goku]^3 Genki Dama ^1!!!!
+GOKU_HUD = [Energia: %d]^n[Nivel Saiyan: %d]
+GOKU_TURN_INTO_SSJ_ALL = O Jogador %s se Transformou em Super Saiyan %d
+GOKU_TURN_INTO_SSJ = Voce se Transformou em Super Saiyan %d
+
+AN_A_FRIEZA = %s Eh o Frieza
+FRIEZA_CLASS_NAME = Frieza
+FRIEZA_INFO = ^4[ZP DBM]^3 Voce eh o Frieza ^1||^3 Pressione ^4[E]^3 Para soltar o Poder ^1(Quando Disponivel)
+FRIEZA_POWER_ENABLE = ^4[Frieza]^3 Seu Poder Esta Ativo Novamente.
+FRIEZA_WAIT = ^4[Frieza]^3 Espere alguns segundos para usar o poder novamente.
+FRIEZA_ONCE_POWER = ^4[Frieza]^3 So um poder por vez.
+
+KRILLIN_CLASS_NAME = Kurilin
+AN_A_KRILLIN = %s Eh o Kurilin
+KRILLIN_INFO = ^4[ZP DBM]^3 Voce Virou o Kurilin ^1||^3 Segure ^4[E]^3 Para Usar o Poder
+KRILLIN_WAIT = ^4[Kurilin]^3 Aguarde Alguns segundos para usar o poder novamente.
+KRILLIN_ONCE_POWER = ^4[Kurilin]^3 Um Poder Por Vez.
+KRILLIN_SKILL_ENABLE = ^4[Kurilin]^3 Seu Poder Esta Ativo novamente.
+
+[pt]
+START_DBM = Modo Dragon Ball !!!
+DBM_MODENANE = Dragon Ball
+
+AN_A_GOKU = %s Eh o Goku
+GOKU_CLASS_NAME = Goku
+GOKU_INFO = ^4[ZP DBM]^3 Voce eh o Goku ^1||^3 Pressione ^4[E]^3 Para soltar o Poder ^1(Quando Disponivel)
+GOKU_NO_ENERGY = ^4[Goku]^3 Voce Nao Tem Energia Suficiente.
+GOKU_ONCE_POWER = ^4[Goku]^3 So um poder por vez.
+GOKU_ATK1 = ^4[Goku]^3 Onda de energia ^1!!!!
+GOKU_ATK2 = ^4[Goku]^3 Onda Letal^1!!!!
+GOKU_ATK3 = ^4[Goku]^3 Ataque do Dragao ^1!!!!
+GOKU_ATK4 = ^4[Goku]^3 Onda Letal Aumentado 10x ^1!!!!
+GOKU_ATK5 = ^4[Goku]^3 Bomba Espiritual ^1!!!!
+GOKU_HUD = [Energia: %d]^n[Nivel Saiadin: %d]
+GOKU_TURN_INTO_SSJ_ALL = O Jogador %s se Transformou em Super Saiadin %d
+GOKU_TURN_INTO_SSJ = Voce se Transformou em Super Saiadin %d
+
+AN_A_FRIEZA = %s Eh o Frieza
+FRIEZA_CLASS_NAME = Frieza
+FRIEZA_INFO = ^4[ZP DBM]^3 Voce eh o Frieza ^1||^3 Pressione ^4[E]^3 Para soltar o Poder ^1(Quando Disponivel)
+FRIEZA_POWER_ENABLE = ^4[Frieza]^3 Seu Poder Esta Ativo Novamente.
+FRIEZA_WAIT = ^4[Frieza]^3 Espere alguns segundos para usar o poder novamente.
+FRIEZA_ONCE_POWER = ^4[Frieza]^3 So um poder por vez.
+
+KRILLIN_CLASS_NAME = Kurilin
+AN_A_KRILLIN = %s Eh o Kurilin
+KRILLIN_INFO = ^4[ZP DBM]^3 Voce Virou o Kurilin ^1||^3 Segure ^4[E]^3 Para Usar o Poder
+KRILLIN_WAIT = ^4[Kurilin]^3 Aguarde Alguns segundos para usar o poder novamente.
+KRILLIN_ONCE_POWER = ^4[Kurilin]^3 Um Poder Por Vez.
+KRILLIN_SKILL_ENABLE = ^4[Kurilin]^3 Seu Poder Esta Ativo novamente.
+
+[es]
+START_DBM = Modo Dragon Ball !!!
+DBM_MODENANE = Dragon Ball
+
+AN_A_GOKU = %s eres el Goku
+GOKU_CLASS_NAME = Goku
+GOKU_INFO = ^4[ZP DBM]^3 Tu eres Goku ^1||^3 Pressione el boton ^4[E]^3 para usar el poder ^1(Cuando Disponible)
+GOKU_NO_ENERGY = ^4[Goku]^3 Tu no tienes energia.
+GOKU_ONCE_POWER = ^4[Goku]^3 Solo un poder a la vez.
+GOKU_ATK1 = ^4[Goku]^3 Onda del energia ^1!!!!
+GOKU_ATK2 = ^4[Goku]^3 Kamehameha ^1!!!!
+GOKU_ATK3 = ^4[Goku]^3 Ataque del Dragon ^1!!!!
+GOKU_ATK4 = ^4[Goku]^3 10x Kamehameha ^1!!!!
+GOKU_ATK5 = ^4[Goku]^3 Genki Dama ^1!!!!
+GOKU_HUD = [Energia: %d]^n[Nivel Saiyan: %d]
+GOKU_TURN_INTO_SSJ_ALL = El Jugador %s se ha convertido en Super Saiyan %d
+GOKU_TURN_INTO_SSJ = Tu se ha convertido en Super Saiyan %d
+
+AN_A_FRIEZA = %s eres el Frieza
+FRIEZA_CLASS_NAME = Frieza
+FRIEZA_INFO = ^4[ZP DBM]^3 Tu eres Frieza ^1||^3 Pressione el boton ^4[E]^3 para usar el poder ^1(Cuando Disponible)
+FRIEZA_POWER_ENABLE = ^4[Frieza]^3 Tu poder está activo de nuevo.
+FRIEZA_WAIT = ^4[Frieza]^3 Espere unos segundos para volver a utilizar la energia.
+FRIEZA_ONCE_POWER = ^4[Frieza]^3 Solo un poder a la vez.
+
+KRILLIN_CLASS_NAME = Kurilin
+AN_A_KRILLIN = %s eres el Kurilin
+KRILLIN_INFO = ^4[ZP DBM]^3 Tu eres Kurilin ^1||^3 Manten presionado el boton ^4[E]^3 para usar el poder
+KRILLIN_WAIT = ^4[Kurilin]^3 Espere unos segundos para volver a utilizar la energia
+KRILLIN_ONCE_POWER = ^4[Kurilin]^3 Solo un poder a la vez.
+KRILLIN_SKILL_ENABLE = ^4[Kurilin]^3 Tu poder está activo de nuevo.

@@ -2,7 +2,7 @@
 
 ## Resources Download: https://github.com/PerfectScrash/ZP-Special-Mods/raw/master/Sonic%20%26%20Shadow/resources.zip
 
-## Game Mode Video: (Cooming soon)
+## Game Mode Video: https://www.youtube.com/watch?v=VBmwCP6kXkU
 	
 ## Description:
 	Play as "Sonic Game" in CS
