@@ -7,6 +7,7 @@ CANNIBAL_EVOLUTION = Player ^3%s^1 eat ^3%d zombie(s)^1 and evolute to ^3Nemesis
 
 TAG_PREFIX = ^4[ZP Tag Mode]^1
 TAG_MODNAME = Tag Mode
+TAG_LASTDISCONECT = The last player in some team are disconected or get killed, progressing in the next stage.
 TAG_WINNER = The Winner of ^3Tag Mode^1 are is ^3'%s'^1 and won ^3%d Ammopacks ^1!!!
 TAG_CHOOSED = Are choosed ^3%d Zombie(s)^1 for this stage ^4-|-^1 Time for end a current stage: ^3%d Second(s)
 TAG_START = Tag Mode !!!
@@ -15,6 +16,7 @@ TAG_COUNTDOWN = -= TAG MODE =-^n-= Zombies Will Explode in %d Second(s) =-^n[%s]
 
 HOTPOTATO_PREFIX = ^4[ZP Hot Potato Mode]^1
 HOTPOTATO_MODNAME = Hot potato Mode
+HOTPOTATO_LASTDISCONECT = The last player in some team are disconected or get killed, progressing in the next stage.
 HOTPOTATO_WINNER = The Winner of ^3Hot Potato Mode^1 are is ^3'%s'^1 and won ^3%d Ammopacks ^1!!!
 HOTPOTATO_CHOOSED = Are choosed ^3%d Zombie(s)^1 for this this stage ^4-|-^1 Time for end a current stage: ^3%d Second(s)
 HOTPOTATO_START = Hot Potato Mode !!!
@@ -38,6 +40,7 @@ CANNIBAL_EVOLUTION = O Jogador ^3%s^1 devorou ^3%d Zumbi(s)^1 e evoluiu a ^3Neme
 
 TAG_PREFIX = ^4[ZP Tag Mode]^1
 TAG_MODNAME = Tag Mode
+TAG_LASTDISCONECT = O Ultimo Jogador de um dos times desconectou ou foi morto, prosseguindo para a proxima etapa
 TAG_WINNER = O Vencedor do ^3Tag Mode^1 é o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
 TAG_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
 TAG_START = Tag Mode !!!
@@ -46,6 +49,7 @@ TAG_COUNTDOWN = -= TAG MODE =-^n-= Zombies iram explodir em %d Segundo(s) =-^n[%
 
 HOTPOTATO_PREFIX = ^4[ZP Batata Quente]^1
 HOTPOTATO_MODNAME = Batata Quente
+HOTPOTATO_LASTDISCONECT = O Ultimo Jogador de um dos times desconectou ou foi morto, prosseguindo para a proxima etapa
 HOTPOTATO_WINNER = O Vencedor da ^3Batata quente^1 é o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
 HOTPOTATO_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
 HOTPOTATO_START = Modo Batata Quente !!!
@@ -69,6 +73,7 @@ CANNIBAL_EVOLUTION = O Jogador ^3%s^1 devorou ^3%d Zumbi(s)^1 e evoluiu a ^3Neme
 
 TAG_PREFIX = ^4[ZP Pega pega]^1
 TAG_MODNAME = Modo Pega Pega
+TAG_LASTDISCONECT = O Ultimo Jogador de um dos times desconectou ou foi morto, prosseguindo para a proxima etapa
 TAG_WINNER = O Vencedor do ^3Pega pega^1 é o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
 TAG_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
 TAG_START = Modo Pega Pega !!!
@@ -77,6 +82,7 @@ TAG_COUNTDOWN = -= PEGA PEGA =-^n-= Zumbis iram explodir em %d Segundo(s) =-^n[%
 
 HOTPOTATO_PREFIX = ^4[ZP Batata Quente]^1
 HOTPOTATO_MODNAME = Batata Quente
+HOTPOTATO_LASTDISCONECT = O Ultimo Jogador de um dos times desconectou ou foi morto, prosseguindo para a proxima etapa
 HOTPOTATO_WINNER = O Vencedor da ^3Batata quente^1 é o jogador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
 HOTPOTATO_CHOOSED = Foram escolhidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tempo para terminar a etapa atual: ^3%d Segundo(s)
 HOTPOTATO_START = Modo Batata Quente !!!
@@ -100,6 +106,7 @@ CANNIBAL_EVOLUTION = El jugador ^3%s^1 devoraste ^3%d Zumbi(s)^1 y evolucionó e
 
 TAG_PREFIX = ^4[ZP Modo Tag]^1
 TAG_MODNAME = Modo Tag
+TAG_LASTDISCONECT = El Ultimo Jugador en algun equipo desconectou ou fue muerto, prosseguindo para la proxima etapa
 TAG_WINNER = El vencedor del ^3Modo Tag^1 eres el jugador ^3'%s'^1 y ganó ^3%d Ammopacks ^1!!!
 TAG_CHOOSED = Han sido elegidos ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tiempo para terminar el paso actual: ^3%d Segundo(s)
 TAG_START = Modo Tag!!!
@@ -108,6 +115,7 @@ TAG_COUNTDOWN = -= MODO TAG=-^n-= Los zombis explotarán en %d Segundo(s) =-^n[%
 
 HOTPOTATO_PREFIX = ^4[ZP Patata caliente]^1
 HOTPOTATO_MODNAME = Patata caliente
+HOTPOTATO_LASTDISCONECT = El Ultimo Jugador en algun equipo desconectou ou fue muerto, prosseguindo para la proxima etapa
 HOTPOTATO_WINNER = O Vencedor da ^3Patata caliente^1 é el jugador ^3'%s'^1 e ganhou ^3%d Ammopacks ^1!!!
 HOTPOTATO_CHOOSED = Han sido elegido ^3%d Zumbis^1 para esta etapa ^4-|-^1 Tiempo para terminar el paso actual: ^3%d Segundo(s)
 HOTPOTATO_START = Modo Patata caliente !!!

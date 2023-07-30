@@ -36,6 +36,9 @@
 	* 1.1:
 		- Fix Server crashes when use "engclient_cmd" in bots
 
+	* 1.2:
+		- Fix Bug when last player in some teams are disconnected/killed
+
 \***************************************************************************/
 
 #include <amxmodx>
@@ -78,7 +81,7 @@ new const g_chance = 90
 
 //----------------[End of Basic configuration]------------------------
 // Variables
-new g_gameid, cvar_minplayers, g_msg_sync, g_Countdown, exp_spr_id, ap_rwd, cvar_tag_ap_winner
+new g_gameid, cvar_minplayers, g_msg_sync, g_Countdown, exp_spr_id, ap_rwd, cvar_tag_ap_winner, exploding
 new Array:g_sound_tension, g_tension_enable
 
 // Defines
@@ -88,7 +91,7 @@ new Array:g_sound_tension, g_tension_enable
 
 //------------------[Plugin Register]---------------------
 public plugin_init() {
-	register_plugin("[ZPSp] Game mode: Tag Mode", "1.1", "[P]erfec[T] [S]cr[@]s[H]")
+	register_plugin("[ZPSp] Game mode: Tag Mode", "1.2", "[P]erfec[T] [S]cr[@]s[H]")
 	register_dictionary("zpsp_misc_modes.txt")
 	
 	// Cvars
@@ -96,7 +99,8 @@ public plugin_init() {
 	cvar_tag_ap_winner = register_cvar("zp_tag_mode_winner_ap", "50")
 
 	// Events
-	RegisterHam(Ham_TraceAttack, "player", "fw_TraceAttack")
+	RegisterHam(Ham_TraceAttack, "player", "fw_TraceAttack");
+	RegisterHam(Ham_Killed, "player", "fw_PlayerKilled_Post", 1)
 	
 	// Hud stuff
 	g_msg_sync = CreateHudSyncObj()
@@ -224,6 +228,9 @@ public announce_winner() {
 	}
 
 	if(winner) {
+		if(zp_get_user_zombie(winner))
+			zp_force_user_class(winner, 0, 0) // Disinfect Winner
+
 		static name[32]; get_user_name(winner, name, charsmax(name))
 		ap_rwd = get_pcvar_num(cvar_tag_ap_winner)
 		zp_add_user_ammopacks(winner, ap_rwd)
@@ -233,6 +240,58 @@ public announce_winner() {
 	//rg_round_end(5.0, WINSTATUS_CTS, ROUND_NONE, "")
 	server_cmd("mp_round_infinite 0");
 	server_cmd("endround");
+}
+
+// Fix bug when remain some player disconected
+public client_disconnected(id) check_round();
+
+// Fix bug when remain some player get slayed/killed
+public fw_PlayerKilled_Post(victim, attacker) check_round();
+
+// Check Round to fix some bugs
+public check_round() {
+	if(exploding) // Prevent lag when exploding zombies
+		return;
+
+	static count_h, count_z, alive_count, i;
+	count_h = 0; count_z = 0; alive_count = 0
+	for(i = 1; i <= MaxClients; i++) {
+		if(!is_user_alive(i))
+			continue;
+
+		alive_count++
+
+		if(zp_get_user_zombie(i)) {
+			count_z++
+			continue;
+		}
+		count_h++
+	}
+
+	if(alive_count <= 1) {
+		remove_task(TASK_COUNTDOWN)
+		remove_task(TASK_SELECT)
+		announce_winner()
+	}
+	else if(count_z < 1 && count_h > 1) {
+		remove_task(TASK_COUNTDOWN)
+		remove_task(TASK_SELECT)
+		client_print_color(0, print_team_default, "%L %L", LANG_PLAYER, "TAG_PREFIX", LANG_PLAYER, "TAG_LASTDISCONECT");
+		set_task(2.0, "Tag_Select", TASK_SELECT);
+	}
+	else if(count_h <= 0 && count_z > 1) {
+		for(i = 1; i <= MaxClients; i++) {
+			if(!is_user_alive(i))
+				continue;
+
+			if(zp_get_user_zombie(i))
+				zp_force_user_class(i, 0, 0)
+		}
+		remove_task(TASK_COUNTDOWN)
+		remove_task(TASK_SELECT)
+		client_print_color(0, print_team_default, "%L %L", LANG_PLAYER, "TAG_PREFIX", LANG_PLAYER, "TAG_LASTDISCONECT");
+		set_task(2.0, "Tag_Select", TASK_SELECT);
+	}
 }
 
 // Selecting Players for turn into zombie
@@ -308,6 +367,8 @@ public explode_zombies() {
 		write_byte(0)   // flags
 		message_end()
 	}
+
+	exploding = false
 	set_task(5.0, "Tag_Select", TASK_SELECT);
 }
 
@@ -353,6 +414,7 @@ public Count() {
 
 		if(g_Countdown <= 0) {
 			remove_task(TASK_COUNTDOWN)
+			exploding = true
 			explode_zombies()
 			ShowSyncHudMsg(0, g_msg_sync, "%L", LANG_PLAYER, "TAG_EXPLODES")
 		}
