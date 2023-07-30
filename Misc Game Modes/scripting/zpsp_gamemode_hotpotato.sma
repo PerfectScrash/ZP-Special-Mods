@@ -285,6 +285,9 @@ public announce_winner() {
 	}
 
 	if(winner) {
+		if(zp_get_user_zombie(winner))
+			zp_force_user_class(winner, 0, 0) // Disinfect Winner
+
 		static name[32]; get_user_name(winner, name, charsmax(name))
 		ap_rwd = get_pcvar_num(cvar_hotpotato_ap_winner)
 		zp_add_user_ammopacks(winner, ap_rwd)
