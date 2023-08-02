@@ -38,6 +38,9 @@
 
 	* 1.2:
 		- Fix Bug when last player in some teams are disconnected/killed
+	
+	* 1.3:
+		- Fix message appears in every round after some player get disconnected/killed (Thanks Wicked_Son_963 for report)
 		  	
 \***************************************************************************/
 
@@ -94,7 +97,7 @@ new Array:g_sound_tension, g_tension_enable
 
 //------------------[Plugin Register]---------------------
 public plugin_init() {
-	register_plugin("[ZPSp] Game mode: Hot Potato Mode", "1.2", "[P]erfec[T] [S]cr[@]s[H]")
+	register_plugin("[ZPSp] Game mode: Hot Potato Mode", "1.3", "[P]erfec[T] [S]cr[@]s[H]")
 	register_dictionary("zpsp_misc_modes.txt")
 	
 	// Cvars
@@ -228,7 +231,7 @@ public fw_PlayerKilled_Post(victim, attacker) check_round();
 
 // Check Round to fix some bugs
 public check_round() {
-	if(exploding) // Prevent lag when exploding zombies
+	if(exploding || !IsHotpotatoRound()) // Prevent lag when exploding zombies
 		return;
 
 	static count_h, count_z, alive_count, i;
