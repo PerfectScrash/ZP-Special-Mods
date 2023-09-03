@@ -26,8 +26,12 @@
 	- zp_sonic_damage_homming_attack "500"	// Homming Attack Damage
 	- zp_sonic_damage_spindash "50"	// Spin Dash Damage
 	- zp_sonic_damage_boost "30" // Boost Damage
+	- zp_sonic_boost_gauge "10" // Boost Gauge
+	- zp_sonic_boost_give "2" // Give gauge ammount when kill a player
 	- zp_shadow_minplayers "2" // Minplayers for start a Shadow Mode
 	- zp_shadow_damage_multi "3.0" // Shadow "Knife" damage multi
 	- zp_shadow_damage_homming_attack "500"	// Homming Attack Damage
 	- zp_shadow_damage_spindash "50" // Spin Dash Damage
 	- zp_shadow_damage_boost "30" // Boost Damage
+	- zp_shadow_boost_gauge "10" // Boost Gauge
+	- zp_shadow_boost_give "2" // Give gauge ammount when kill a player

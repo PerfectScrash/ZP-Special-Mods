@@ -15,6 +15,20 @@
 		- zp_sonic_damage_homming_attack "500"	// Homming Attack Damage
 		- zp_sonic_damage_spindash "50"			// Spin Dash Damage
 		- zp_sonic_damage_boost "30"			// Boost Damage
+		- zp_sonic_boost_gauge "10"				// Boost Gauge
+		- zp_sonic_boost_give "2"				// Give gauge ammount when kill a player
+
+	* Changelog
+		- 1.0: First Release
+
+		- 1.1:
+			- ZPSp 4.5 Support
+			- Improved Camera and homming shoot aim
+
+		- 1.2:
+			- Fixed Homming Shoot Aim
+			- Added cvars: "zp_sonic_boost_gauge" and "zp_sonic_boost_give"
+
 
 	* Credits:
 		- [P]erfect [S]crash: For Editing Model Animation, sound and for Create this Plugin
@@ -69,8 +83,6 @@ new const sp_clip_type = 2 // Unlimited Ammo (0 - Disable | 1 - Unlimited Semi C
 new const sp_allow_glow = 0
 new sp_color_rgb[3] = { 0, 50, 255 }
 
-const MaxBoostGauge = 20
-
 enum { SND_BOOST = 0, SND_JUMP, SND_HOMMING_AIM, SND_HOMMING_ATTACK, SND_SPIN_START, SND_SPIN_UNLEASH }
 new const skill_sounds[][] = {
 	"zpsp_sonic/boost.wav",
@@ -81,8 +93,6 @@ new const skill_sounds[][] = {
 	"zpsp_sonic/spindash_unleash.wav"
 }
 
-
-
 /*-------------------------------------
 --> Gamemode Config
 --------------------------------------*/
@@ -92,7 +102,7 @@ new const g_chance = 90						// Gamemode chance
 /*-------------------------------------
 --> Variables/Defines
 --------------------------------------*/
-new g_gameid, g_msg_sync, cvar_minplayers, g_special_id, cvar_damage, cvar_camera_distance
+new g_gameid, g_msg_sync, cvar_minplayers, g_special_id, cvar_damage, cvar_camera_distance, cvar_boost_gauge, cvar_boost_give
 new Float:Time1, Float:fAim[3] , Float:User_fVelocity[3][33], Float:Time_Bot[33], Float:Time_skill[33];
 new g_spin_force[33], g_in_dash_attack[33], cvar_attack_damage[3], g_sequence_anim[33], g_boost_gauge[33], created_aim
 new g_homming_target[33], used_homming[33], g_SonicTrail, have_trail[33], g_pl_cam_ent[33], g_shadow_id;
@@ -119,7 +129,7 @@ enum {
 --> Plugin registeration.
 --------------------------------------*/
 public plugin_init() {
-	register_plugin("[ZPSp] Special Class: Sonic", "1.1", "[P]erfec[T] [S]cr[@]s[H]")
+	register_plugin("[ZPSp] Special Class: Sonic", "1.2", "[P]erfec[T] [S]cr[@]s[H]")
 	register_dictionary("zpsp_sonic_shadow.txt")
 	
 	cvar_minplayers = register_cvar("zp_sonic_minplayers", "2")
@@ -127,12 +137,14 @@ public plugin_init() {
 	cvar_attack_damage[HOMMING_ATTACK-1] = register_cvar("zp_sonic_damage_homming_attack", "500") 
 	cvar_attack_damage[ATTACK_SPINDASH-1] = register_cvar("zp_sonic_damage_spindash", "50") 
 	cvar_attack_damage[ATTACK_BOOST-1] = register_cvar("zp_sonic_damage_boost", "30") 
+	cvar_boost_gauge = register_cvar("zp_sonic_boost_gauge", "10") 
+	cvar_boost_give = register_cvar("zp_sonic_boost_give", "2") 
 
 	register_event("CurWeapon","checkModel","be","1=1")
 	
-	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage")
+	RegisterHam(Ham_TakeDamage, "player", "fw_TakeDamage", 0, true)
 	register_forward(FM_Touch, "fw_Touch")
-	RegisterHam(Ham_Killed, "player", "fw_PlayerKilled_Post", 1)
+	RegisterHam(Ham_Killed, "player", "fw_PlayerKilled_Post", 1, true)
 	register_forward(FM_AddToFullPack, "fwd_AddToFullPack", 1);
 	register_forward(FM_SetView, "FakeMeta_SetView_Pre", false);
 	RegisterHam(Ham_Think, "trigger_camera", "HamHook_CameraThink_Pre", false);
@@ -287,8 +299,7 @@ public zp_user_humanized_post(id) {
 			zp_set_custom_game_mod(g_gameid)	// Force Start Sonic Round
 	
 		//reset_sonic_vars(id, 0)
-
-		g_boost_gauge[id] = MaxBoostGauge
+		g_boost_gauge[id] = get_pcvar_num(cvar_boost_gauge)
 
 		if(is_user_bot(id)) {
 			Time_Bot[id] = get_gametime()
@@ -823,7 +834,7 @@ public fwd_AddToFullPack(es_handle, e, id, host, hostflags, player, pSet) {
 		set_es(es_handle, ES_AimEnt, g_homming_target[host])
 		set_es(es_handle, ES_RenderFx, kRenderFxGlowShell);
 		set_es(es_handle, ES_RenderColor, { 0, 255, 0 });
-		set_es(es_handle, ES_RenderMode, kRenderGlow);
+		set_es(es_handle, ES_RenderMode, kRenderNormal);
 		set_es(es_handle, ES_RenderAmt, 40);
 	}
 	return FMRES_HANDLED;
@@ -840,10 +851,10 @@ public fw_PlayerKilled_Post(victim, attacker) {
 		return HAM_IGNORED;
 
 	if(GetUserSonic(attacker)) {
-		if(g_boost_gauge[attacker] + 4 <= MaxBoostGauge) 
-			g_boost_gauge[attacker] += 4
+		if(g_boost_gauge[attacker] + get_pcvar_num(cvar_boost_give) <= get_pcvar_num(cvar_boost_gauge)) 
+			g_boost_gauge[attacker] += get_pcvar_num(cvar_boost_give)
 		else
-			g_boost_gauge[attacker] = MaxBoostGauge
+			g_boost_gauge[attacker] = get_pcvar_num(cvar_boost_gauge)
 	}
 
 	return HAM_IGNORED
@@ -862,7 +873,8 @@ public boost_gauge_hud(id) {
 		return;
 	}
 
-	static szBar[32], color[3]
+	static szBar[32], color[3], MaxBoostGauge
+	MaxBoostGauge = get_pcvar_num(cvar_boost_gauge)
 
 	color = { 0, 100, 255 }
 
